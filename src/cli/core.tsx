@@ -183,14 +183,26 @@ export class Cli {
     switch (e.code) {
       case "ArrowUp": {
         if (this.inputRef.current) {
-          this.inputRef.current.value = this.history.prev();
+          const input = this.history.prev();
+
+          this.inputRef.current.value = input;
+
+          requestAnimationFrame(() => {
+            this.inputRef.current?.setSelectionRange(
+              input.length,
+              input.length
+            );
+          });
         }
 
         return;
       }
       case "ArrowDown": {
         if (this.inputRef.current) {
-          this.inputRef.current.value = this.history.next();
+          const input = this.history.next();
+
+          this.inputRef.current.value = input;
+          this.inputRef.current.setSelectionRange(input.length, input.length);
         }
 
         return;
