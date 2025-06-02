@@ -3,12 +3,14 @@ import { Command } from "../command-registry";
 
 export const sleep: Command = {
   name: "sleep",
-  shortDescription: "Wait for N seconds",
+  shortDescription: "Pause for Number seconds",
   description: (
     <div>
       <div>sleep: sleep [-N]</div>
       <div>Options: </div>
-      <div>-N Wait for N seconds, if N is not specified, wait for 1 second</div>
+      <div>
+        -N Pause for N seconds, if N is not specified, wait for 1 second
+      </div>
     </div>
   ),
   run: async ({ args: [, N] }) => {

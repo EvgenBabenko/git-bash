@@ -2,7 +2,8 @@ import { Command } from "../command-registry";
 
 export const ls: Command = {
   name: "ls",
-  shortDescription: "List all directories and files",
+  shortDescription:
+    "List information about the FILEs (the current directory by default).",
   run: ({ cli }) => {
     const children = cli.getChildren();
 

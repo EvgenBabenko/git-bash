@@ -8,7 +8,7 @@ export const fs: Tree = {
     {
       name: "file1.sh",
       type: "file",
-      path: "file1",
+      path: "file1.sh",
       content: () => <div>Hello World</div>,
       children: [],
     },

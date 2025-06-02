@@ -9,6 +9,7 @@ import { exit } from "./commands/exit";
 import { CommandHistory } from "./command-history";
 import { sleep } from "./commands/sleep";
 import { emitter } from "./utils";
+import { mkdir } from "./commands/mkdir";
 
 export interface Tree {
   name: string;
@@ -222,5 +223,6 @@ export class Cli {
     this.registerCommand(clear);
     this.registerCommand(exit);
     this.registerCommand(sleep);
+    this.registerCommand(mkdir);
   }
 }
