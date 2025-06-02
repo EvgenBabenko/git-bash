@@ -1,8 +1,14 @@
 {
-  "name": "git-bash",
+  "name": "@EvgenBabenko/git-bash",
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild dev --open",
