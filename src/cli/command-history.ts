@@ -5,7 +5,6 @@ export class CommandHistory {
   add(command: string) {
     this.commands.push(command);
     this.index = this.commands.length;
-    console.log(command, this.commands, this.index);
   }
 
   prev(): string {

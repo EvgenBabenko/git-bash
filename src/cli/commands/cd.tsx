@@ -13,35 +13,46 @@ export const cd: Command = {
       </div>
     </div>
   ),
-  run: ({ args: [commandInput, path], cli }) => {
-    const children = cli.getChildren();
+  run: ({ args: [commandInput, P], cli }) => {
+    const path = P;
+    const rootPath = "";
 
-    // TODO: implement correct -P
+    // Go to root if no path is provided
     if (!path) {
-      cli.path =
-        cli.path === "/"
-          ? "/"
-          : "/" + cli.path.split("/").slice(0, -1).join("/");
-
+      cli.path = rootPath;
       emitter.emit("CLI_PATH", cli.path);
-
       return "";
     }
 
-    if (!children) {
-      return <div>no such file or directory</div>;
+    // Normalize the current path into an array
+    let currentPathSegments = cli.path.split("/").filter(Boolean);
+
+    const parts = path.split("/").filter(Boolean);
+
+    let currentChildren = cli.getChildren();
+
+    for (const part of parts) {
+      if (part === "..") {
+        currentPathSegments.pop();
+        currentChildren = cli.getChildren(currentPathSegments.join("/"));
+        continue;
+      }
+
+      if (!currentChildren) {
+        return `bash: ${commandInput}: ${part}: No such file or directory`;
+      }
+
+      const nextDir = currentChildren.find((el) => el.name === part);
+
+      if (!nextDir) {
+        return `bash: ${commandInput}: ${part}: No such file or directory`;
+      }
+
+      currentPathSegments.push(part);
+      currentChildren = cli.getChildren(currentPathSegments.join("/"));
     }
 
-    const child = children.find((el) => el.name === path);
-
-    if (!child) {
-      return `bash: ${commandInput}: ${path}: Not a directory`;
-    }
-
-    // this.path =
-    //   "/" + this.path.split("/").filter(Boolean).concat(dir).join("/");
-    cli.path += cli.path.startsWith("/") ? path : `/${path}`;
-
+    cli.path = currentPathSegments.join("/");
     emitter.emit("CLI_PATH", cli.path);
 
     return "";

@@ -5,7 +5,6 @@ import { help } from "./commands/help";
 import { ls } from "./commands/ls";
 import { clear } from "./commands/clear";
 import { scrollToBottom } from "./utils";
-import { open } from "./commands/open";
 import { exit } from "./commands/exit";
 import { CommandHistory } from "./command-history";
 import { sleep } from "./commands/sleep";
@@ -31,7 +30,7 @@ export class Cli {
   private registry = new CommandRegistry();
   private history = new CommandHistory();
   public items: Item[] = [];
-  public path = "/";
+  public path = "";
 
   constructor(
     private tree: Tree,
@@ -55,7 +54,7 @@ export class Cli {
     }
   }
 
-  getChildren(): Tree[] | null {
+  getChildren(path?: string): Tree[] | null {
     function inner(tree: Tree, targetPath: string): Tree[] | null {
       if (tree.path === targetPath) {
         return tree.children || [];
@@ -76,7 +75,7 @@ export class Cli {
       return null;
     }
 
-    return inner(this.tree, this.path);
+    return inner(this.tree, path ?? this.path);
   }
 
   addItem(item: Item) {
@@ -128,9 +127,11 @@ export class Cli {
         return;
       }
 
-      const output = React.isValidElement(element.content)
-        ? React.createElement(element.content)
-        : element.content;
+      const output = (
+        React.isValidElement(element.content)
+          ? React.createElement(element.content)
+          : element.content
+      ) as React.ReactNode;
 
       this.addItem({ ...item, output });
 
@@ -218,7 +219,6 @@ export class Cli {
     this.registerCommand(help(this.getRegistry()));
     this.registerCommand(cd);
     this.registerCommand(ls);
-    // this.registerCommand(open);
     this.registerCommand(clear);
     this.registerCommand(exit);
     this.registerCommand(sleep);

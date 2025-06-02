@@ -3,26 +3,15 @@ import { Minus, Square, X } from "lucide-react";
 import logo from "./git-bash.png";
 
 interface Props extends React.PropsWithChildren {
-  onClose: () => void;
-  onMinimize: () => void;
-  onExpand: () => void;
   path: string;
   terminalRef: React.RefObject<HTMLDivElement | null>;
   userName: string;
 }
 
-export const Shell = ({
-  children,
-  onClose,
-  onMinimize,
-  onExpand,
-  path,
-  terminalRef,
-  userName,
-}: Props) => {
-  const pathArr = path.split("/").filter(Boolean).join("/");
+export const Shell = ({ children, path, terminalRef, userName }: Props) => {
+  const pathSegments = path.split("/").filter(Boolean).join("/");
   const pathHeader = `MINGW64:/c/${userName}${
-    pathArr.length > 0 ? `/${pathArr}` : ""
+    pathSegments.length > 0 ? `/${pathSegments}` : ""
   }`;
 
   return (
@@ -33,24 +22,9 @@ export const Shell = ({
           {pathHeader}
         </div>
         <div className="flex items-center justify-center gap-x-3">
-          <Minus
-            strokeWidth={1}
-            size={16}
-            onClick={onMinimize}
-            className="cursor-pointer"
-          />
-          <Square
-            strokeWidth={1}
-            size={16}
-            onClick={onExpand}
-            className="cursor-pointer"
-          />
-          <X
-            strokeWidth={1}
-            size={16}
-            onClick={onClose}
-            className="cursor-pointer"
-          />
+          <Minus strokeWidth={1} size={16} />
+          <Square strokeWidth={1} size={16} />
+          <X strokeWidth={1} size={16} />
         </div>
       </div>
       <div

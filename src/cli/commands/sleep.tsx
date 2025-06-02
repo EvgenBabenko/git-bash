@@ -11,8 +11,8 @@ export const sleep: Command = {
       <div>-N Wait for N seconds, if N is not specified, wait for 1 second</div>
     </div>
   ),
-  run: async ({ args }) => {
-    const sec = Number(args[1]) || 1;
+  run: async ({ args: [, N] }) => {
+    const sec = Number(N) || 1;
 
     await delay(sec * 1000);
   },

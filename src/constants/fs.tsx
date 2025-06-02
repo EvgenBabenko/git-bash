@@ -3,33 +3,47 @@ import { Tree } from "../cli";
 export const fs: Tree = {
   name: "root",
   type: "folder",
-  path: "/",
+  path: "",
   children: [
     {
-      name: "hello.sh",
+      name: "file1.sh",
       type: "file",
-      path: "/hello.sh",
+      path: "file1",
       content: () => <div>Hello World</div>,
       children: [],
     },
     {
-      name: "hello",
+      name: "file2",
       type: "file",
-      path: "/hello",
+      path: "file2",
       content: "Hello World!",
       children: [],
     },
     {
-      name: "projects",
+      name: "folder",
       type: "folder",
-      path: "/projects",
+      path: "folder",
       children: [
         {
           name: "index.html",
           type: "file",
-          path: "/projects/index.html",
+          path: "folder/index.html",
           children: [],
           content: "",
+        },
+        {
+          name: "folder2",
+          type: "folder",
+          path: "folder/folder2",
+          children: [
+            {
+              name: "index.html",
+              type: "file",
+              path: "folder/folder2/index.html",
+              children: [],
+              content: "",
+            },
+          ],
         },
       ],
     },

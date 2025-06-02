@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import Typewriter from "typewriter-effect";
 import { Cli, Item } from "../cli";
 import { fs } from "../constants/fs";
 
@@ -9,17 +8,13 @@ import { emitter } from "../cli/utils";
 
 const USER_NAME = "guest";
 
-interface Props {
-  onClose: () => void;
-  onMinimize: () => void;
-  onExpand: () => void;
-}
+interface Props {}
 
-export const Terminal = ({ onClose, onMinimize, onExpand }: Props) => {
+export const Terminal = (props: Props) => {
   const [index, setIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
-  const [path, setPath] = useState("/");
+  const [path, setPath] = useState("");
   // TODO dont forget to set to true
   const [processing, setProcessing] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
@@ -27,8 +22,12 @@ export const Terminal = ({ onClose, onMinimize, onExpand }: Props) => {
   // TODO dont forget to set to true
   const [initialization, setInitialization] = useState(false);
 
+  console.log("path", path);
+
   useEffect(() => {
     cli.current = new Cli(fs, inputRef, terminalRef);
+
+    setPath(cli.current.path);
 
     const controller = new AbortController();
 
@@ -86,51 +85,7 @@ export const Terminal = ({ onClose, onMinimize, onExpand }: Props) => {
   }, [processing]);
 
   return (
-    <Shell
-      onClose={onClose}
-      onMinimize={onMinimize}
-      onExpand={onExpand}
-      path={path}
-      terminalRef={terminalRef}
-      userName={USER_NAME}
-    >
-      {/* {initialization && (
-          <>
-            <ShellTitle path={path} userName={USER_NAME} />
-            <Typewriter
-              onInit={(typewriter) => {
-                typewriter
-                  .pasteString("$ ", null)
-                  .pauseFor(2500)
-                  .typeString("./hello.sh<br>")
-                  .pauseFor(700)
-                  .typeString("Hello World!")
-                  .pauseFor(1200)
-                  .deleteChars(6)
-                  .typeString(
-                    "I'm frontend developer. Turning ideas into code and challenges into problems"
-                  )
-                  .pauseFor(1500)
-                  .deleteChars(8)
-                  .typeString("solutions.")
-                  .callFunction((state) => {
-                    state.elements.cursor.remove();
-                    setProcessing(false);
-                    cli.current?.addItem({
-                      id: Date.now().toString(),
-                      input: "./hello.sh",
-                      output:
-                        "Hello I'm frontend developer. Turning ideas into code and challenges into solutions.",
-                      path: cli.current?.path,
-                    });
-                    setInitialization(false);
-                  })
-                  .start();
-              }}
-            />
-          </>
-        )} */}
-
+    <Shell path={path} terminalRef={terminalRef} userName={USER_NAME}>
       {items.map((item) => {
         return (
           <div key={item.id}>
