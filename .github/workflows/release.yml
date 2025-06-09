@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write # ✅ Important! Needed to publish releases
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
@@ -13,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -30,7 +33,7 @@ jobs:
           mkdir -p release
           zip -r release/my-component-dist.zip dist
 
-      - name: Upload release artifact to GitHub
+      - name: Upload release artifact
         uses: softprops/action-gh-release@v2
         with:
           files: release/my-component-dist.zip
