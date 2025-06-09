@@ -10,4 +10,9 @@ export default defineConfig({
   output: {
     assetPrefix: "/git-bash/",
   },
+  source: {
+    entry: {
+      index: "./src/index.ts",
+    },
+  },
 });

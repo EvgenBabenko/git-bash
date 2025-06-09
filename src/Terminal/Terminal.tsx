@@ -8,10 +8,10 @@ import { emitter } from "cli/utils";
 
 const USER_NAME = "guest";
 
-interface Props {}
+// interface Props {}
 
-export const Terminal = (props: Props) => {
-  const [index, setIndex] = useState(0);
+export const Terminal = () => {
+  // const [index, setIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const [path, setPath] = useState("");
@@ -20,7 +20,7 @@ export const Terminal = (props: Props) => {
   const [items, setItems] = useState<Item[]>([]);
   const cli = useRef<Cli | null>(null);
   // TODO dont forget to set to true
-  const [initialization, setInitialization] = useState(false);
+  // const [initialization, setInitialization] = useState(false);
 
   console.log("path", path);
 
