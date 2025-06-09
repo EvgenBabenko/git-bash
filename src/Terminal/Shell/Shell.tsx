@@ -1,6 +1,6 @@
 import React from "react";
 import { Minus, Square, X } from "lucide-react";
-import logo from "./git-bash.png";
+import logo from "assets/img/git-bash.png";
 
 interface Props extends React.PropsWithChildren {
   path: string;

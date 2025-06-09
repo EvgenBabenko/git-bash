@@ -3,8 +3,8 @@ import { Command } from "../command-registry";
 
 export const sleep: Command = {
   name: "sleep",
-  shortDescription: "Pause for Number seconds",
-  description: (
+  description: "Pause for Number seconds",
+  help: (
     <div>
       <div>sleep: sleep [-N]</div>
       <div>Options: </div>

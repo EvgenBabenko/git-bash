@@ -8,8 +8,8 @@ export interface CommandContext {
 
 export interface Command {
   name: string;
-  shortDescription: string;
-  description?: React.ReactNode;
+  description: string;
+  help?: React.ReactNode;
   run: (ctx: CommandContext) => React.ReactNode | Promise<void>;
 }
 

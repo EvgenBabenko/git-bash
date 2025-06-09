@@ -3,7 +3,7 @@ import { Tree } from "../core";
 
 export const mkdir: Command = {
   name: "mkdir",
-  shortDescription: "Create a directory",
+  description: "Create a directory",
   run: ({ cli, args: [, folderName] }) => {
     if (!folderName) {
       return "mkdir: missing operand";

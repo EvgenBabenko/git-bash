@@ -3,8 +3,8 @@ import { emitter } from "../utils";
 
 export const cd: Command = {
   name: "cd",
-  shortDescription: "Change the shell working directory.",
-  description: (
+  description: "Change the shell working directory.",
+  help: (
     <div>
       <div>cd: cd [-P]</div>
       <div>Options: </div>

@@ -3,7 +3,7 @@ import { Command, CommandRegistry } from "../command-registry";
 export function help(regisrty: CommandRegistry): Command {
   return {
     name: "help",
-    shortDescription: "Display information about built-in commands",
+    description: "Display information about built-in commands",
     run: ({ args: [, commandInput] }) => {
       const commands = regisrty.getAll();
 
@@ -11,8 +11,7 @@ export function help(regisrty: CommandRegistry): Command {
         const command = commands.find((c) => c.name === commandInput);
 
         return (
-          command?.description ??
-          `bash: help: no help topics match "${commandInput}".`
+          command?.help ?? `bash: help: no help topics match "${commandInput}".`
         );
       }
 
@@ -27,7 +26,7 @@ export function help(regisrty: CommandRegistry): Command {
           {commands.map((c) => {
             return (
               <div key={c.name}>
-                {c.name}: {c.shortDescription}
+                {c.name}: {c.description}
               </div>
             );
           })}

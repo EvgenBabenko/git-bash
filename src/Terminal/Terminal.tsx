@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Cli, Item } from "../cli";
-import { fs } from "../constants/fs";
+import { Cli, Item } from "cli";
+import { fs } from "constants/fs";
 
 import { Shell } from "./Shell/Shell";
 import { ShellTitle } from "./ShellTitle/ShellTitle";
-import { emitter } from "../cli/utils";
+import { emitter } from "cli/utils";
 
 const USER_NAME = "guest";
 

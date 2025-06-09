@@ -1,4 +1,4 @@
-import { Tree } from "../cli";
+import { Tree } from "cli";
 
 export const fs: Tree = {
   name: "root",
@@ -13,9 +13,9 @@ export const fs: Tree = {
       children: [],
     },
     {
-      name: "file2",
+      name: "file2.sh",
       type: "file",
-      path: "file2",
+      path: "file2.sh",
       content: "Hello World!",
       children: [],
     },
