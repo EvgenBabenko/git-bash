@@ -2,14 +2,17 @@ import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rslib/core";
 
 export default defineConfig({
+  plugins: [pluginReact()],
   source: {
     entry: {
-      index: ["./src/**"],
+      // TODO: use bundleless
+      index: ["./src/index.tsx"],
     },
   },
   lib: [
     {
-      bundle: false,
+      // TODO: use bundleless declaration files
+      bundle: true,
       dts: true,
       format: "esm",
     },
@@ -17,5 +20,4 @@ export default defineConfig({
   output: {
     target: "web",
   },
-  plugins: [pluginReact()],
 });
