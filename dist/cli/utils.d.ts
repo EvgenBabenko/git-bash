@@ -1,6 +1,7 @@
 import { Item } from "./core";
 export declare function scrollToBottom(ref: React.RefObject<HTMLDivElement | null>): void;
 type Events = {
+    CLI_INITIALIZATION: boolean;
     CLI_PROCESSING_STATUS: boolean;
     CLI_CLEAR: void;
     CLI_PATH: string;

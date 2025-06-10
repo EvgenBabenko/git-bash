@@ -341,7 +341,7 @@ import git_bash_namespaceObject from "./static/image/git-bash.png";
 const Shell = ({ children, path, terminalRef, userName })=>{
     const pathHeader = `MINGW64:/c/${userName}${path ? `/${path}` : ""}`;
     return /*#__PURE__*/ jsxs("div", {
-        className: "text-left border border-white bg-black mx-auto text-sm w-full max-w-[600px]",
+        className: "text-left border border-white bg-black mx-auto text-sm w-full h-full",
         children: [
             /*#__PURE__*/ jsxs("div", {
                 className: "bg-white p-[6px_4px] flex items-center justify-between text-black",
@@ -377,7 +377,7 @@ const Shell = ({ children, path, terminalRef, userName })=>{
                 ]
             }),
             /*#__PURE__*/ jsx("div", {
-                className: "overflow-y-auto h-[250px] p-1 text-sm font-[Roboto_Mono]",
+                className: "overflow-y-auto h-full p-1 text-sm font-[Roboto_Mono]",
                 ref: terminalRef,
                 children: children
             })
@@ -445,6 +445,9 @@ const Terminal = ({ onInit, fs })=>{
         emitter.on("CLI_PROCESSING_STATUS", (status)=>{
             setProcessing(status);
         });
+        emitter.on("CLI_INITIALIZATION", (status)=>{
+            setInitialization(status);
+        });
         emitter.on("CLI_ON_UPDATE_ITEM", (command)=>{
             setItems((prev)=>prev.map((item)=>item.id === command.id ? command : item));
         });
@@ -460,7 +463,6 @@ const Terminal = ({ onInit, fs })=>{
             userName: USER_NAME
         }).then((res)=>{
             if (/*#__PURE__*/ external_react_default.isValidElement(res)) setInitComponent(res);
-            setInitialization(false);
         }).catch((err)=>console.error(err));
         else {
             setInitialization(false);
@@ -472,6 +474,7 @@ const Terminal = ({ onInit, fs })=>{
             emitter.off("CLI_PATH");
             emitter.off("CLI_CLEAR");
             emitter.off("CLI_PROCESSING_STATUS");
+            emitter.off("CLI_INITIALIZATION");
             emitter.off("CLI_ON_UPDATE_ITEM");
             emitter.off("CLI_ON_ADD_ITEM");
         };

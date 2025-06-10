@@ -1,7 +1,7 @@
 // import { ShellTitle } from "Terminal/ShellTitle/ShellTitle";
 import "./App.css";
 import { Terminal } from "./Terminal/Terminal";
-import { delay, emitter } from "cli/utils";
+import { emitter } from "cli/utils";
 import "./index.css";
 import Typewriter from "typewriter-effect";
 import { fs } from "constants/fs";
