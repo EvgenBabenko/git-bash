@@ -10,6 +10,7 @@ export function scrollToBottom(ref: React.RefObject<HTMLDivElement | null>) {
 }
 
 type Events = {
+  CLI_INITIALIZATION: boolean;
   CLI_PROCESSING_STATUS: boolean;
   CLI_CLEAR: void;
   CLI_PATH: string;

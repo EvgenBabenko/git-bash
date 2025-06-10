@@ -57,6 +57,9 @@ export const Terminal = ({ onInit, fs }: Props) => {
     emitter.on("CLI_PROCESSING_STATUS", (status) => {
       setProcessing(status);
     });
+    emitter.on("CLI_INITIALIZATION", (status) => {
+      setInitialization(status);
+    });
     emitter.on("CLI_ON_UPDATE_ITEM", (command) => {
       setItems((prev) =>
         prev.map((item) => (item.id === command.id ? command : item))
@@ -76,8 +79,6 @@ export const Terminal = ({ onInit, fs }: Props) => {
           if (React.isValidElement(res)) {
             setInitComponent(res);
           }
-
-          setInitialization(false);
         })
         .catch((err) => console.error(err));
     } else {
@@ -93,6 +94,7 @@ export const Terminal = ({ onInit, fs }: Props) => {
       emitter.off("CLI_PATH");
       emitter.off("CLI_CLEAR");
       emitter.off("CLI_PROCESSING_STATUS");
+      emitter.off("CLI_INITIALIZATION");
       emitter.off("CLI_ON_UPDATE_ITEM");
       emitter.off("CLI_ON_ADD_ITEM");
     };
