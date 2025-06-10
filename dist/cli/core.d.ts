@@ -17,7 +17,6 @@ export declare class Cli {
     private tree;
     private inputRef;
     private terminalRef;
-    private processing;
     private registry;
     private history;
     items: Item[];

@@ -27,7 +27,6 @@ export interface Item {
 }
 
 export class Cli {
-  private processing = false;
   private registry = new CommandRegistry();
   private history = new CommandHistory();
   public items: Item[] = [];
@@ -82,7 +81,6 @@ export class Cli {
   addItem(item: Item) {
     this.history.add(item.input);
     this.items.push(item);
-    emitter.emit("CLI_ON_ADD_ITEM", item);
     scrollToBottom(this.terminalRef);
   }
 
@@ -111,7 +109,11 @@ export class Cli {
       const element = items?.find((el) => el.name === fileName);
 
       if (!element) {
-        this.addItem({
+        // this.addItem({
+        //   ...item,
+        //   output: `bash: ${arg}: No such file or directory`,
+        // });
+        emitter.emit("CLI_ON_ADD_ITEM", {
           ...item,
           output: `bash: ${arg}: No such file or directory`,
         });
@@ -120,7 +122,11 @@ export class Cli {
       }
 
       if (!element.content) {
-        this.addItem({
+        // this.addItem({
+        //   ...item,
+        //   output: `bash: ${element.content}: content not found`,
+        // });
+        emitter.emit("CLI_ON_ADD_ITEM", {
           ...item,
           output: `bash: ${element.content}: content not found`,
         });
@@ -134,7 +140,8 @@ export class Cli {
           : element.content
       ) as React.ReactNode;
 
-      this.addItem({ ...item, output });
+      // this.addItem({ ...item, output });
+      emitter.emit("CLI_ON_ADD_ITEM", { ...item, output });
 
       return;
     }
@@ -142,12 +149,17 @@ export class Cli {
     const command = this.registry.get(args[0]);
 
     if (!command) {
-      this.addItem({ ...item, output: `bash: ${args[0]}: command not found` });
+      // this.addItem({ ...item, output: `bash: ${args[0]}: command not found` });
+      emitter.emit("CLI_ON_ADD_ITEM", {
+        ...item,
+        output: `bash: ${args[0]}: command not found`,
+      });
 
       return;
     }
 
-    this.addItem(item);
+    // this.addItem(item);
+    emitter.emit("CLI_ON_ADD_ITEM", item);
 
     const emit = (output: React.ReactNode) => {
       item.output = output;
@@ -159,14 +171,12 @@ export class Cli {
 
       if (result instanceof Promise) {
         // Async command: let it call emit() internally
-        this.processing = true;
-        emitter.emit("CLI_PROCESSING_STATUS", this.processing);
+        emitter.emit("CLI_PROCESSING_STATUS", true);
 
         result
           .catch((e) => emit(`Error: ${e.message}`))
           .finally(() => {
-            this.processing = false;
-            emitter.emit("CLI_PROCESSING_STATUS", this.processing);
+            emitter.emit("CLI_PROCESSING_STATUS", false);
           });
       } else {
         // Sync command: returned output directly

@@ -195,7 +195,6 @@ class Cli {
     tree;
     inputRef;
     terminalRef;
-    processing;
     registry;
     history;
     items;
@@ -204,7 +203,6 @@ class Cli {
         this.tree = tree;
         this.inputRef = inputRef;
         this.terminalRef = terminalRef;
-        this.processing = false;
         this.registry = new CommandRegistry();
         this.history = new CommandHistory();
         this.items = [];
@@ -234,7 +232,6 @@ class Cli {
     addItem(item) {
         this.history.add(item.input);
         this.items.push(item);
-        emitter.emit("CLI_ON_ADD_ITEM", item);
         scrollToBottom(this.terminalRef);
     }
     execute(input) {
@@ -252,27 +249,27 @@ class Cli {
             const fileName = arg.split("/").pop() ?? "";
             const items = this.getChildren();
             const element = items?.find((el)=>el.name === fileName);
-            if (!element) return void this.addItem({
+            if (!element) return void emitter.emit("CLI_ON_ADD_ITEM", {
                 ...item,
                 output: `bash: ${arg}: No such file or directory`
             });
-            if (!element.content) return void this.addItem({
+            if (!element.content) return void emitter.emit("CLI_ON_ADD_ITEM", {
                 ...item,
                 output: `bash: ${element.content}: content not found`
             });
             const output = /*#__PURE__*/ external_react_default.isValidElement(element.content) ? /*#__PURE__*/ external_react_default.createElement(element.content) : element.content;
-            this.addItem({
+            emitter.emit("CLI_ON_ADD_ITEM", {
                 ...item,
                 output
             });
             return;
         }
         const command = this.registry.get(args[0]);
-        if (!command) return void this.addItem({
+        if (!command) return void emitter.emit("CLI_ON_ADD_ITEM", {
             ...item,
             output: `bash: ${args[0]}: command not found`
         });
-        this.addItem(item);
+        emitter.emit("CLI_ON_ADD_ITEM", item);
         const emit = (output)=>{
             item.output = output;
             emitter.emit("CLI_ON_UPDATE_ITEM", item);
@@ -284,11 +281,9 @@ class Cli {
                 cli: this
             });
             if (result instanceof Promise) {
-                this.processing = true;
-                emitter.emit("CLI_PROCESSING_STATUS", this.processing);
+                emitter.emit("CLI_PROCESSING_STATUS", true);
                 result.catch((e)=>emit(`Error: ${e.message}`)).finally(()=>{
-                    this.processing = false;
-                    emitter.emit("CLI_PROCESSING_STATUS", this.processing);
+                    emitter.emit("CLI_PROCESSING_STATUS", false);
                 });
             } else emit(result);
         } catch (error) {
@@ -342,57 +337,6 @@ class Cli {
         this.registerCommand(mkdir);
     }
 }
-const fs = {
-    name: "root",
-    type: "folder",
-    path: "",
-    children: [
-        {
-            name: "file1.sh",
-            type: "file",
-            path: "file1.sh",
-            content: ()=>/*#__PURE__*/ jsx("div", {
-                    children: "Hello World"
-                }),
-            children: []
-        },
-        {
-            name: "file2.sh",
-            type: "file",
-            path: "file2.sh",
-            content: "Hello World!",
-            children: []
-        },
-        {
-            name: "folder",
-            type: "folder",
-            path: "folder",
-            children: [
-                {
-                    name: "index.html",
-                    type: "file",
-                    path: "folder/index.html",
-                    children: [],
-                    content: ""
-                },
-                {
-                    name: "folder2",
-                    type: "folder",
-                    path: "folder/folder2",
-                    children: [
-                        {
-                            name: "index.html",
-                            type: "file",
-                            path: "folder/folder2/index.html",
-                            children: [],
-                            content: ""
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-};
 import git_bash_namespaceObject from "./static/image/git-bash.png";
 const Shell = ({ children, path, terminalRef, userName })=>{
     const pathHeader = `MINGW64:/c/${userName}${path ? `/${path}` : ""}`;
@@ -472,14 +416,15 @@ const ShellTitle = ({ path, userName })=>/*#__PURE__*/ jsxs("span", {
         ]
     });
 const USER_NAME = "guest";
-const Terminal = ()=>{
+const Terminal = ({ onInit, fs })=>{
     const inputRef = useRef(null);
     const terminalRef = useRef(null);
     const [path, setPath] = useState("");
-    const [processing, setProcessing] = useState(false);
+    const [processing, setProcessing] = useState(true);
     const [items, setItems] = useState([]);
     const cli = useRef(null);
-    console.log("path", path);
+    const [initialization, setInitialization] = useState(true);
+    const [initComponent, setInitComponent] = useState(null);
     useEffect(()=>{
         cli.current = new Cli(fs, inputRef, terminalRef);
         setPath(cli.current.path);
@@ -503,12 +448,24 @@ const Terminal = ()=>{
         emitter.on("CLI_ON_UPDATE_ITEM", (command)=>{
             setItems((prev)=>prev.map((item)=>item.id === command.id ? command : item));
         });
-        emitter.on("CLI_ON_ADD_ITEM", (command)=>{
+        emitter.on("CLI_ON_ADD_ITEM", (item)=>{
+            if (cli.current) cli.current.addItem(item);
             setItems((prev)=>[
                     ...prev,
-                    command
+                    item
                 ]);
         });
+        if (onInit) onInit({
+            path: cli.current.path,
+            userName: USER_NAME
+        }).then((res)=>{
+            if (/*#__PURE__*/ external_react_default.isValidElement(res)) setInitComponent(res);
+            setInitialization(false);
+        }).catch((err)=>console.error(err));
+        else {
+            setInitialization(false);
+            setProcessing(false);
+        }
         return ()=>{
             controller.abort();
             cli.current?.removeEventListener();
@@ -529,6 +486,7 @@ const Terminal = ()=>{
         terminalRef: terminalRef,
         userName: USER_NAME,
         children: [
+            initialization && initComponent,
             items.map((item)=>/*#__PURE__*/ jsxs("div", {
                     children: [
                         /*#__PURE__*/ jsx(ShellTitle, {

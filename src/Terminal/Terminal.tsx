@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Cli, Item } from "cli";
-import { fs } from "constants/fs";
+import React, { useEffect, useRef, useState } from "react";
+import { Cli, Item, Tree } from "cli";
 
 import { Shell } from "./Shell/Shell";
 import { ShellTitle } from "./ShellTitle/ShellTitle";
@@ -8,21 +7,23 @@ import { emitter } from "cli/utils";
 
 const USER_NAME = "guest";
 
-// interface Props {}
+interface Props {
+  fs: Tree;
+  onInit?: (props: {
+    path: string;
+    userName: string;
+  }) => Promise<void | React.ReactNode>;
+}
 
-export const Terminal = () => {
-  // const [index, setIndex] = useState(0);
+export const Terminal = ({ onInit, fs }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const [path, setPath] = useState("");
-  // TODO dont forget to set to true
-  const [processing, setProcessing] = useState(false);
+  const [processing, setProcessing] = useState(true);
   const [items, setItems] = useState<Item[]>([]);
   const cli = useRef<Cli | null>(null);
-  // TODO dont forget to set to true
-  // const [initialization, setInitialization] = useState(false);
-
-  console.log("path", path);
+  const [initialization, setInitialization] = useState(true);
+  const [initComponent, setInitComponent] = useState<React.ReactNode>(null);
 
   useEffect(() => {
     cli.current = new Cli(fs, inputRef, terminalRef);
@@ -61,9 +62,28 @@ export const Terminal = () => {
         prev.map((item) => (item.id === command.id ? command : item))
       );
     });
-    emitter.on("CLI_ON_ADD_ITEM", (command) => {
-      setItems((prev) => [...prev, command]);
+    emitter.on("CLI_ON_ADD_ITEM", (item) => {
+      if (cli.current) {
+        cli.current.addItem(item);
+      }
+
+      setItems((prev) => [...prev, item]);
     });
+
+    if (onInit) {
+      onInit({ path: cli.current.path, userName: USER_NAME })
+        .then((res) => {
+          if (React.isValidElement(res)) {
+            setInitComponent(res);
+          }
+
+          setInitialization(false);
+        })
+        .catch((err) => console.error(err));
+    } else {
+      setInitialization(false);
+      setProcessing(false);
+    }
 
     return () => {
       controller.abort();
@@ -86,6 +106,8 @@ export const Terminal = () => {
 
   return (
     <Shell path={path} terminalRef={terminalRef} userName={USER_NAME}>
+      {initialization && initComponent}
+
       {items.map((item) => {
         return (
           <div key={item.id}>
