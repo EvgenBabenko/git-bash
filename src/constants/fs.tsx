@@ -1,4 +1,4 @@
-import { Tree } from "cli";
+import { Tree } from "cli/core";
 
 export const fs: Tree = {
   name: "root",

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Cli, Item, Tree } from "cli";
+import { Cli, Item, Tree } from "cli/core";
+import "../index.css";
 
 import { Shell } from "./Shell/Shell";
 import { ShellTitle } from "./ShellTitle/ShellTitle";

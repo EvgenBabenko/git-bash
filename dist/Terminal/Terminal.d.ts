@@ -1,5 +1,6 @@
 import React from "react";
-import { Tree } from "../cli";
+import { Tree } from "../cli/core";
+import "../index.css";
 interface Props {
     fs: Tree;
     onInit?: (props: {
