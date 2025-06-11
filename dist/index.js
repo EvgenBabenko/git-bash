@@ -249,30 +249,44 @@ class Cli {
             const fileName = arg.split("/").pop() ?? "";
             const items = this.getChildren();
             const element = items?.find((el)=>el.name === fileName);
-            if (!element) return void emitter.emit("CLI_ON_ADD_ITEM", {
-                ...item,
-                output: `bash: ${arg}: No such file or directory`
-            });
-            if (!element.content) return void emitter.emit("CLI_ON_ADD_ITEM", {
-                ...item,
-                output: `bash: ${element.content}: content not found`
-            });
-            const output = /*#__PURE__*/ external_react_default.isValidElement(element.content) ? /*#__PURE__*/ external_react_default.createElement(element.content) : element.content;
-            emitter.emit("CLI_ON_ADD_ITEM", {
+            if (!element) {
+                const output = `bash: ${arg}: No such file or directory`;
+                emitter.emit("CLI_ADD_ITEM", {
+                    ...item,
+                    output
+                });
+                return;
+            }
+            if (!element.content) {
+                const output = `bash: ${element.content}: content not found`;
+                emitter.emit("CLI_ADD_ITEM", {
+                    ...item,
+                    output
+                });
+                return;
+            }
+            const output = "function" == typeof element.content ? /*#__PURE__*/ external_react_default.createElement(element.content) : element.content ?? "";
+            emitter.emit("CLI_ADD_ITEM", {
                 ...item,
                 output
             });
             return;
         }
         const command = this.registry.get(args[0]);
-        if (!command) return void emitter.emit("CLI_ON_ADD_ITEM", {
-            ...item,
-            output: `bash: ${args[0]}: command not found`
-        });
-        emitter.emit("CLI_ON_ADD_ITEM", item);
+        if (!command) {
+            const output = `bash: ${args[0]}: command not found`;
+            emitter.emit("CLI_ADD_ITEM", {
+                ...item,
+                output
+            });
+            return;
+        }
+        emitter.emit("CLI_ADD_ITEM", item);
         const emit = (output)=>{
-            item.output = output;
-            emitter.emit("CLI_ON_UPDATE_ITEM", item);
+            emitter.emit("CLI_UPDATE_ITEM", {
+                ...item,
+                output
+            });
         };
         try {
             const result = command.run({
@@ -338,52 +352,56 @@ class Cli {
     }
 }
 import git_bash_namespaceObject from "./static/image/git-bash.png";
-const Shell = ({ children, path, terminalRef, userName })=>{
+const Header = ({ userName, path })=>{
     const pathHeader = `MINGW64:/c/${userName}${path ? `/${path}` : ""}`;
     return /*#__PURE__*/ jsxs("div", {
-        className: "text-left border border-white bg-black mx-auto text-sm w-full h-full",
+        className: "bg-white p-[6px_4px] flex items-center justify-between text-black",
         children: [
             /*#__PURE__*/ jsxs("div", {
-                className: "bg-white p-[6px_4px] flex items-center justify-between text-black",
+                className: "flex items-center justify-center gap-x-1",
                 children: [
-                    /*#__PURE__*/ jsxs("div", {
-                        className: "flex items-center justify-center gap-x-1",
-                        children: [
-                            /*#__PURE__*/ jsx("img", {
-                                src: git_bash_namespaceObject,
-                                width: "16",
-                                height: "16"
-                            }),
-                            pathHeader
-                        ]
+                    /*#__PURE__*/ jsx("img", {
+                        src: git_bash_namespaceObject,
+                        width: "16",
+                        height: "16"
                     }),
-                    /*#__PURE__*/ jsxs("div", {
-                        className: "flex items-center justify-center gap-x-3",
-                        children: [
-                            /*#__PURE__*/ jsx(Minus, {
-                                strokeWidth: 1,
-                                size: 16
-                            }),
-                            /*#__PURE__*/ jsx(Square, {
-                                strokeWidth: 1,
-                                size: 16
-                            }),
-                            /*#__PURE__*/ jsx(X, {
-                                strokeWidth: 1,
-                                size: 16
-                            })
-                        ]
-                    })
+                    pathHeader
                 ]
             }),
+            /*#__PURE__*/ jsxs("div", {
+                className: "flex items-center justify-center gap-x-3",
+                children: [
+                    /*#__PURE__*/ jsx(Minus, {
+                        strokeWidth: 1,
+                        size: 16
+                    }),
+                    /*#__PURE__*/ jsx(Square, {
+                        strokeWidth: 1,
+                        size: 16
+                    }),
+                    /*#__PURE__*/ jsx(X, {
+                        strokeWidth: 1,
+                        size: 16
+                    })
+                ]
+            })
+        ]
+    });
+};
+const Shell = ({ children, path, terminalRef, userName })=>/*#__PURE__*/ jsxs("div", {
+        className: "text-left border border-white bg-black mx-auto text-sm w-full h-full flex flex-col",
+        children: [
+            /*#__PURE__*/ jsx(Header, {
+                userName: userName,
+                path: path
+            }),
             /*#__PURE__*/ jsx("div", {
-                className: "overflow-y-auto h-full p-1 text-sm font-[Roboto_Mono]",
+                className: "flex-1 overflow-y-auto p-1 text-sm font-[Roboto_Mono]",
                 ref: terminalRef,
                 children: children
             })
         ]
     });
-};
 const ShellTitle = ({ path, userName })=>/*#__PURE__*/ jsxs("span", {
         children: [
             /*#__PURE__*/ jsxs("span", {
@@ -448,10 +466,10 @@ const Terminal = ({ onInit, fs })=>{
         emitter.on("CLI_INITIALIZATION", (status)=>{
             setInitialization(status);
         });
-        emitter.on("CLI_ON_UPDATE_ITEM", (command)=>{
+        emitter.on("CLI_UPDATE_ITEM", (command)=>{
             setItems((prev)=>prev.map((item)=>item.id === command.id ? command : item));
         });
-        emitter.on("CLI_ON_ADD_ITEM", (item)=>{
+        emitter.on("CLI_ADD_ITEM", (item)=>{
             if (cli.current) cli.current.addItem(item);
             setItems((prev)=>[
                     ...prev,
@@ -475,8 +493,8 @@ const Terminal = ({ onInit, fs })=>{
             emitter.off("CLI_CLEAR");
             emitter.off("CLI_PROCESSING_STATUS");
             emitter.off("CLI_INITIALIZATION");
-            emitter.off("CLI_ON_UPDATE_ITEM");
-            emitter.off("CLI_ON_ADD_ITEM");
+            emitter.off("CLI_UPDATE_ITEM");
+            emitter.off("CLI_ADD_ITEM");
         };
     }, []);
     useEffect(()=>{

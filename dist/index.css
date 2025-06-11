@@ -281,6 +281,10 @@
     margin-inline: auto;
   }
 
+  .contents {
+    display: contents;
+  }
+
   .flex {
     display: flex;
   }
@@ -303,6 +307,14 @@
 
   .max-w-\[600px\] {
     max-width: 600px;
+  }
+
+  .flex-1 {
+    flex: 1;
+  }
+
+  .flex-col {
+    flex-direction: column;
   }
 
   .items-center {
