@@ -1,7 +1,6 @@
 // import { ShellTitle } from "Terminal/ShellTitle/ShellTitle";
 import "./App.css";
 import { Terminal } from "./Terminal/Terminal";
-import { emitter } from "cli/utils";
 import "./index.css";
 import { fs } from "constants/fs";
 
