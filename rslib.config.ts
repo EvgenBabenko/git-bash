@@ -7,6 +7,7 @@ export default defineConfig({
     entry: {
       // TODO: use bundleless
       index: ["./src/index.tsx"],
+      // index: ["./src/**"],
     },
   },
   lib: [

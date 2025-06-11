@@ -1,4 +1,5 @@
 import { Tree } from "cli/core";
+import { Hello } from "./Hello/Hello";
 
 export const fs: Tree = {
   name: "root",
@@ -10,6 +11,13 @@ export const fs: Tree = {
       type: "file",
       path: "file1.sh",
       content: () => <div>Hello World</div>,
+      children: [],
+    },
+    {
+      name: "hello.sh",
+      type: "file",
+      path: "hello.sh",
+      content: Hello,
       children: [],
     },
     {

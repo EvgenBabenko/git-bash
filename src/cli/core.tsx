@@ -109,39 +109,24 @@ export class Cli {
       const element = items?.find((el) => el.name === fileName);
 
       if (!element) {
-        // this.addItem({
-        //   ...item,
-        //   output: `bash: ${arg}: No such file or directory`,
-        // });
-        emitter.emit("CLI_ON_ADD_ITEM", {
-          ...item,
-          output: `bash: ${arg}: No such file or directory`,
-        });
+        const output = `bash: ${arg}: No such file or directory`;
+        emitter.emit("CLI_ADD_ITEM", { ...item, output });
 
         return;
       }
 
       if (!element.content) {
-        // this.addItem({
-        //   ...item,
-        //   output: `bash: ${element.content}: content not found`,
-        // });
-        emitter.emit("CLI_ON_ADD_ITEM", {
-          ...item,
-          output: `bash: ${element.content}: content not found`,
-        });
+        const output = `bash: ${element.content}: content not found`;
+        emitter.emit("CLI_ADD_ITEM", { ...item, output });
 
         return;
       }
 
-      const output = (
-        React.isValidElement(element.content)
+      const output: React.ReactNode =
+        typeof element.content === "function"
           ? React.createElement(element.content)
-          : element.content
-      ) as React.ReactNode;
-
-      // this.addItem({ ...item, output });
-      emitter.emit("CLI_ON_ADD_ITEM", { ...item, output });
+          : element.content ?? "";
+      emitter.emit("CLI_ADD_ITEM", { ...item, output });
 
       return;
     }
@@ -149,21 +134,16 @@ export class Cli {
     const command = this.registry.get(args[0]);
 
     if (!command) {
-      // this.addItem({ ...item, output: `bash: ${args[0]}: command not found` });
-      emitter.emit("CLI_ON_ADD_ITEM", {
-        ...item,
-        output: `bash: ${args[0]}: command not found`,
-      });
+      const output = `bash: ${args[0]}: command not found`;
+      emitter.emit("CLI_ADD_ITEM", { ...item, output });
 
       return;
     }
 
-    // this.addItem(item);
-    emitter.emit("CLI_ON_ADD_ITEM", item);
+    emitter.emit("CLI_ADD_ITEM", item);
 
     const emit = (output: React.ReactNode) => {
-      item.output = output;
-      emitter.emit("CLI_ON_UPDATE_ITEM", item);
+      emitter.emit("CLI_UPDATE_ITEM", { ...item, output });
     };
 
     try {

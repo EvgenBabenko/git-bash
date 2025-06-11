@@ -15,8 +15,8 @@ type Events = {
   CLI_CLEAR: void;
   CLI_PATH: string;
   CLI_EXIT: void;
-  CLI_ON_UPDATE_ITEM: Item;
-  CLI_ON_ADD_ITEM: Item;
+  CLI_UPDATE_ITEM: Item;
+  CLI_ADD_ITEM: Item;
 };
 
 export const emitter = mitt<Events>();

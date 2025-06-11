@@ -61,12 +61,12 @@ export const Terminal = ({ onInit, fs }: Props) => {
     emitter.on("CLI_INITIALIZATION", (status) => {
       setInitialization(status);
     });
-    emitter.on("CLI_ON_UPDATE_ITEM", (command) => {
+    emitter.on("CLI_UPDATE_ITEM", (command) => {
       setItems((prev) =>
         prev.map((item) => (item.id === command.id ? command : item))
       );
     });
-    emitter.on("CLI_ON_ADD_ITEM", (item) => {
+    emitter.on("CLI_ADD_ITEM", (item) => {
       if (cli.current) {
         cli.current.addItem(item);
       }
@@ -96,8 +96,8 @@ export const Terminal = ({ onInit, fs }: Props) => {
       emitter.off("CLI_CLEAR");
       emitter.off("CLI_PROCESSING_STATUS");
       emitter.off("CLI_INITIALIZATION");
-      emitter.off("CLI_ON_UPDATE_ITEM");
-      emitter.off("CLI_ON_ADD_ITEM");
+      emitter.off("CLI_UPDATE_ITEM");
+      emitter.off("CLI_ADD_ITEM");
     };
   }, []);
 
