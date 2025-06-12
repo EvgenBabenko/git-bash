@@ -19,7 +19,7 @@
     "build:app": "rsbuild build",
     "dev:app": "rsbuild dev --open",
     "preview": "rsbuild preview",
-    "deploy": "gh-pages -d dist",
+    "deploy": "gh-pages -d examples/dist",
     "build": "rslib build",
     "dev": "rslib build --watch"
   },
