@@ -5,15 +5,12 @@ export default defineConfig({
   plugins: [pluginReact()],
   source: {
     entry: {
-      // TODO: use bundleless
-      index: ["./src/index.tsx"],
-      // index: ["./src/**"],
+      index: ["./src/**"],
     },
   },
   lib: [
     {
-      // TODO: use bundleless declaration files
-      bundle: true,
+      bundle: false,
       dts: true,
       format: "esm",
     },

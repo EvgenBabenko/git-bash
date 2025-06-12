@@ -1,4 +1,4 @@
-import { Tree } from "cli/core";
+import { Tree } from "@lib/cli/core";
 import { Hello } from "./Hello/Hello";
 
 export const fs: Tree = {

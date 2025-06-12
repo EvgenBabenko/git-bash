@@ -1,6 +1,6 @@
 import React from "react";
 import { Minus, Square, X } from "lucide-react";
-import logo from "assets/img/git-bash.png";
+import logo from "@/assets/img/git-bash.png";
 
 const Header = ({ userName, path }: { userName: string; path: string }) => {
   const pathHeader = `MINGW64:/c/${userName}${path ? `/${path}` : ""}`;

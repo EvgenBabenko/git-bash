@@ -5,14 +5,24 @@ import { pluginImageCompress } from "@rsbuild/plugin-image-compress";
 export default defineConfig({
   plugins: [pluginReact(), pluginImageCompress()],
   html: {
-    template: "./src/index.html",
+    template: "./examples/src/index.html",
   },
   output: {
     assetPrefix: "/git-bash/",
+    distPath: {
+      root: "./examples/dist",
+    },
+    cleanDistPath: true,
   },
   source: {
     entry: {
-      index: "./src/main.tsx",
+      index: "./examples/src/index.tsx",
+    },
+    tsconfigPath: "./examples/tsconfig.json",
+  },
+  resolve: {
+    alias: {
+      "@": "./src",
     },
   },
 });

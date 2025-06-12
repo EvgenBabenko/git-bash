@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { delay, emitter } from "cli/utils";
+import { delay, emitter } from "@lib/cli/utils";
 
 export const Hello = () => {
   const [res, setRes] = useState("");

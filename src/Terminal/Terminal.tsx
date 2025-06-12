@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Cli, Item, Tree } from "cli/core";
-import "../index.css";
+import { Cli, Item, Tree } from "@/cli/core";
 
 import { Shell } from "./Shell/Shell";
 import { ShellTitle } from "./ShellTitle/ShellTitle";
-import { emitter } from "cli/utils";
+import { emitter } from "@/cli/utils";
 
 const USER_NAME = "guest";
 
