@@ -28,6 +28,7 @@ const parseArgs = (args: string[]) => {
 export const rm: Command = {
   name: "rm",
   description: "Removing files from the working directory",
+  help: "rm [OPTION]... [FILE]...",
   run: ({ cli, args: [, ...rest] }) => {
     const argv = parseArgs(rest);
 
