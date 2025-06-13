@@ -8,14 +8,14 @@ import { emitter } from "@/cli/utils";
 const USER_NAME = "guest";
 
 interface Props {
-  fs: Tree;
+  tree: Tree;
   onInit?: (props: {
     path: string;
     userName: string;
   }) => Promise<void | React.ReactNode>;
 }
 
-export const Terminal = ({ onInit, fs }: Props) => {
+export const Terminal = ({ onInit, tree }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const [path, setPath] = useState("");
@@ -26,7 +26,7 @@ export const Terminal = ({ onInit, fs }: Props) => {
   const [initComponent, setInitComponent] = useState<React.ReactNode>(null);
 
   useEffect(() => {
-    cli.current = new Cli(fs, inputRef, terminalRef);
+    cli.current = new Cli(tree, inputRef, terminalRef);
 
     setPath(cli.current.path);
 

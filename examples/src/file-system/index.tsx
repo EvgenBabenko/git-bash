@@ -1,7 +1,7 @@
 import { Tree } from "@lib/cli/core";
 import { Hello } from "./Hello/Hello";
 
-export const fs: Tree = {
+export const tree: Tree = {
   name: "root",
   type: "folder",
   path: "",
