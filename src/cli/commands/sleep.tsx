@@ -3,18 +3,17 @@ import { Command } from "../command-registry";
 
 export const sleep: Command = {
   name: "sleep",
-  description: "Pause for Number seconds",
-  help: (
-    <div>
-      <div>sleep: sleep [-N]</div>
-      <div>Options: </div>
-      <div>
-        -N Pause for N seconds, if N is not specified, wait for 1 second
-      </div>
-    </div>
-  ),
-  run: async ({ args: [, N] }) => {
-    const sec = Number(N) || 1;
+  description: "Pause for NUMBER seconds.",
+  help: "Usage: sleep NUMBER",
+  run: async ({ args: [, N], emit }) => {
+    console.log(N);
+    if (!N) {
+      emit("sleep: missing operand");
+
+      return;
+    }
+
+    const sec = Number(N);
 
     await delay(sec * 1000);
   },

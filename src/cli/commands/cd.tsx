@@ -13,7 +13,7 @@ export const cd: Command = {
       </div>
     </div>
   ),
-  run: ({ args: [commandInput, P], cli }) => {
+  run: ({ args: [, P], cli }) => {
     const path = P;
     const rootPath = "";
 
@@ -39,13 +39,13 @@ export const cd: Command = {
       }
 
       if (!currentChildren) {
-        return `bash: ${commandInput}: ${part}: No such file or directory`;
+        return `bash: cd: ${part}: No such file or directory`;
       }
 
       const nextDir = currentChildren.find((el) => el.name === part);
 
       if (!nextDir) {
-        return `bash: ${commandInput}: ${part}: No such file or directory`;
+        return `bash: cd: ${part}: No such file or directory`;
       }
 
       currentPathSegments.push(part);

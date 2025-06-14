@@ -1,44 +1,24 @@
 import { Command } from "../command-registry";
-
-/** @description converts -rf to ["-r", "-f"] */
-const parseArg = (arg: string) => {
-  return arg
-    .split("")
-    .slice(1)
-    .map((el) => `-${el}`);
-};
-
-/** @description converts ["-r", "-f", test] to { "-r": true, "-f": true, "test": true } */
-const parseArgs = (args: string[]) => {
-  const map = new Map();
-
-  args.forEach((el) => {
-    if (el.includes("-")) {
-      parseArg(el).forEach((el) => {
-        map.set(el, true);
-      });
-    } else {
-      map.set(el, true);
-    }
-  });
-
-  return map;
-};
+import { parseArgs } from "../utils/parse-args";
 
 export const rm: Command = {
   name: "rm",
-  description: "Removing files from the working directory",
-  help: "rm [OPTION]... [FILE]...",
+  description: "Remove the FILE(s).",
+  help: "Usage: rm [OPTION]... [FILE]...",
   run: ({ cli, args: [, ...rest] }) => {
     const argv = parseArgs(rest);
 
-    const arrayToDelete = [...argv]
+    const toDelete = [...argv]
       .map((el) => el[0])
       .filter((el) => !el.includes("-"));
 
-    const children = cli.getChildren() ?? [];
+    const children = cli.getChildren();
 
-    const outputs = arrayToDelete.map((el) => {
+    if (!children) {
+      return "unexpected error";
+    }
+
+    const outputs = toDelete.map((el) => {
       const item = children.find((item) => item.name === el);
 
       if (!item) {
