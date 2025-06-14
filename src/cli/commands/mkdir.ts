@@ -1,5 +1,4 @@
 import { Command } from "../command-registry";
-import { Tree } from "../core";
 import { parseArgs } from "../utils/parse-args";
 
 export const mkdir: Command = {
@@ -52,14 +51,12 @@ export const mkdir: Command = {
       return `mkdir: cannot create directory '${directory}': File exists`;
     }
 
-    const newFolder: Tree = {
+    children.push({
       name: directory,
       type: "folder",
       path: `${cli.path}"/"${directory}`,
       children: [],
-    };
-
-    children.push(newFolder);
+    });
 
     return "";
   },

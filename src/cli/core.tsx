@@ -11,6 +11,7 @@ import { sleep } from "./commands/sleep";
 import { emitter } from "./utils";
 import { mkdir } from "./commands/mkdir";
 import { rm } from "./commands/rm";
+import { touch } from "./commands/touch";
 
 export interface Tree {
   name: string;
@@ -228,5 +229,6 @@ export class Cli {
     this.registerCommand(sleep);
     this.registerCommand(mkdir);
     this.registerCommand(rm);
+    this.registerCommand(touch);
   }
 }
