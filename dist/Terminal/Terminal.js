@@ -5,7 +5,7 @@ import { Shell } from "./Shell/Shell.js";
 import { ShellTitle } from "./ShellTitle/ShellTitle.js";
 import { emitter } from "../cli/utils.js";
 const USER_NAME = "guest";
-const Terminal = ({ onInit, fs })=>{
+const Terminal = ({ onInit, tree })=>{
     const inputRef = useRef(null);
     const terminalRef = useRef(null);
     const [path, setPath] = useState("");
@@ -15,7 +15,7 @@ const Terminal = ({ onInit, fs })=>{
     const [initialization, setInitialization] = useState(true);
     const [initComponent, setInitComponent] = useState(null);
     useEffect(()=>{
-        cli.current = new Cli(fs, inputRef, terminalRef);
+        cli.current = new Cli(tree, inputRef, terminalRef);
         setPath(cli.current.path);
         const controller = new AbortController();
         inputRef.current?.focus();

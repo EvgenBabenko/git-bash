@@ -1,7 +1,7 @@
 import external_react_default from "react";
 import { CommandRegistry } from "./command-registry.js";
 import { cd } from "./commands/cd.js";
-import { help } from "./commands/help.js";
+import { help as help_js_help } from "./commands/help.js";
 import { ls } from "./commands/ls.js";
 import { clear } from "./commands/clear.js";
 import { emitter, scrollToBottom } from "./utils.js";
@@ -9,6 +9,8 @@ import { exit } from "./commands/exit.js";
 import { CommandHistory } from "./command-history.js";
 import { sleep } from "./commands/sleep.js";
 import { mkdir } from "./commands/mkdir.js";
+import { rm } from "./commands/rm.js";
+import { touch } from "./commands/touch.js";
 class Cli {
     tree;
     inputRef;
@@ -56,6 +58,7 @@ class Cli {
         if (!input) return;
         const args = input.split(" ").filter(Boolean);
         const arg = args[0];
+        const help = args.find((el)=>"--help" === el);
         const isCommand = !arg.includes("/");
         const item = {
             id: Date.now().toString(),
@@ -90,15 +93,19 @@ class Cli {
             });
             return;
         }
-        const command = this.registry.get(args[0]);
+        const command = this.registry.get(arg);
         if (!command) {
-            const output = `bash: ${args[0]}: command not found`;
+            const output = `bash: ${arg}: command not found`;
             emitter.emit("CLI_ADD_ITEM", {
                 ...item,
                 output
             });
             return;
         }
+        if (help) return void emitter.emit("CLI_ADD_ITEM", {
+            ...item,
+            output: command.help
+        });
         emitter.emit("CLI_ADD_ITEM", item);
         const emit = (output)=>{
             emitter.emit("CLI_UPDATE_ITEM", {
@@ -160,13 +167,15 @@ class Cli {
         this.registry.register(command);
     }
     registerDefaultCommands() {
-        this.registerCommand(help(this.getRegistry()));
+        this.registerCommand(help_js_help(this.getRegistry()));
         this.registerCommand(cd);
         this.registerCommand(ls);
         this.registerCommand(clear);
         this.registerCommand(exit);
         this.registerCommand(sleep);
         this.registerCommand(mkdir);
+        this.registerCommand(rm);
+        this.registerCommand(touch);
     }
 }
 export { Cli };

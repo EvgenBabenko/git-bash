@@ -16,7 +16,7 @@ const cd = {
             })
         ]
     }),
-    run: ({ args: [commandInput, P], cli })=>{
+    run: ({ args: [, P], cli })=>{
         const path = P;
         const rootPath = "";
         if (!path) {
@@ -33,9 +33,9 @@ const cd = {
                 currentChildren = cli.getChildren(currentPathSegments.join("/"));
                 continue;
             }
-            if (!currentChildren) return `bash: ${commandInput}: ${part}: No such file or directory`;
+            if (!currentChildren) return `bash: cd: ${part}: No such file or directory`;
             const nextDir = currentChildren.find((el)=>el.name === part);
-            if (!nextDir) return `bash: ${commandInput}: ${part}: No such file or directory`;
+            if (!nextDir) return `bash: cd: ${part}: No such file or directory`;
             currentPathSegments.push(part);
             currentChildren = cli.getChildren(currentPathSegments.join("/"));
         }
