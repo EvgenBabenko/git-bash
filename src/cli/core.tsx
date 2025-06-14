@@ -12,6 +12,7 @@ import { emitter } from "./utils";
 import { mkdir } from "./commands/mkdir";
 import { rm } from "./commands/rm";
 import { touch } from "./commands/touch";
+import { promt } from "./commands/promt";
 
 export interface Tree {
   name: string;
@@ -26,6 +27,12 @@ export interface Item {
   input: string;
   output: React.ReactNode;
   path: string;
+}
+
+export interface PromtItem {
+  id: string;
+  resolve: (value: string) => void;
+  question: string;
 }
 
 export class Cli {
@@ -178,6 +185,16 @@ export class Cli {
     }
   }
 
+  promptUser(question: string): Promise<string> {
+    return new Promise((resolve) => {
+      emitter.emit("CLI_PROMPT", {
+        id: Date.now().toString(),
+        resolve,
+        question,
+      });
+    });
+  }
+
   handleKeyUp(e: KeyboardEvent) {
     switch (e.code) {
       case "ArrowUp": {
@@ -237,5 +254,6 @@ export class Cli {
     this.registerCommand(mkdir);
     this.registerCommand(rm);
     this.registerCommand(touch);
+    this.registerCommand(promt);
   }
 }

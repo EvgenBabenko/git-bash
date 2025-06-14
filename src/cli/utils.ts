@@ -1,5 +1,5 @@
 import mitt from "mitt";
-import { Item } from "./core";
+import { Item, PromtItem } from "./core";
 
 export function scrollToBottom(ref: React.RefObject<HTMLDivElement | null>) {
   requestAnimationFrame(() => {
@@ -17,6 +17,7 @@ type Events = {
   CLI_EXIT: void;
   CLI_UPDATE_ITEM: Item;
   CLI_ADD_ITEM: Item;
+  CLI_PROMPT: PromtItem;
 };
 
 export const emitter = mitt<Events>();

@@ -4,13 +4,24 @@ import { parseArgs } from "../utils/parse-args";
 export const rm: Command = {
   name: "rm",
   description: "Remove the FILE(s).",
-  help: "Usage: rm [OPTION]... [FILE]...",
-  run: ({ cli, args: [, ...rest] }) => {
+  help: (
+    <>
+      Usage: rm [OPTION]... [FILE]... <br />
+      <br />
+      -f ignore nonexistent files and arguments, never prompt <br />
+      -r remove directories and their contents recursively <br />
+      -i prompt before every removal <br />
+      <br />
+      By default, rm does not remove directories. Use the -r option to remove
+      each listed directory, too, along with all of its contents.
+    </>
+  ),
+  run: async ({ cli, args: [, ...rest] }) => {
     const argv = parseArgs(rest);
 
     const toDelete = [...argv]
       .map((el) => el[0])
-      .filter((el) => !el.includes("-"));
+      .filter((el) => !el.startsWith("-"));
 
     const children = cli.getChildren();
 
@@ -18,24 +29,45 @@ export const rm: Command = {
       return "unexpected error";
     }
 
-    const outputs = toDelete.map((el) => {
-      const item = children.find((item) => item.name === el);
+    const results: string[] = [];
+
+    for (const name of toDelete) {
+      const item = children.find((i) => i.name === name);
 
       if (!item) {
-        return `rm: cannot remove '${el}': No such file or directory`;
+        if (!argv.has("-f")) {
+          results.push(
+            `rm: cannot remove '${name}': No such file or directory`
+          );
+        }
+
+        continue;
       }
 
-      if (item?.type === "folder" && !argv.has("-r")) {
-        return `rm: cannot remove '${el}': Is a directory`;
-      } else {
-        children.splice(children.indexOf(item), 1);
+      if (argv.has("-i") && !argv.has("-f")) {
+        const question = `rm: remove ${item.type} '${name}'?`;
+        const answer = await cli.promptUser(question);
+
+        if (!/^y(es)?$/i.test(answer.trim())) {
+          continue;
+        }
       }
-    });
+
+      if (item.type === "folder" && !argv.has("-r")) {
+        if (!argv.has("-f")) {
+          results.push(`rm: cannot remove '${name}': Is a directory`);
+        }
+
+        continue;
+      }
+
+      children.splice(children.indexOf(item), 1);
+    }
 
     return (
       <>
-        {outputs.map((el) => (
-          <div key={el}>{el}</div>
+        {results.map((res, i) => (
+          <div key={i}>{res}</div>
         ))}
       </>
     );

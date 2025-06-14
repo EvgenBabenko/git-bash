@@ -9,12 +9,9 @@ export function help(regisrty: CommandRegistry): Command {
 
       return (
         <>
-          GNU bash, version 5.1.16(1)-release (x86_64-pc-msys)
-          <br />
-          These shell commands are defined internally.
-          <br />
-          Type `name --help' to find out more about the function `name'.
-          <br />
+          GNU bash, version 5.1.16(1)-release (x86_64-pc-msys) <br />
+          These shell commands are defined internally. <br />
+          Type `name --help' to find out more about the function `name'. <br />
           <br />
           {commands.map((c) => {
             return (

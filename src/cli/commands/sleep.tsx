@@ -6,7 +6,6 @@ export const sleep: Command = {
   description: "Pause for NUMBER seconds.",
   help: "Usage: sleep NUMBER",
   run: async ({ args: [, N], emit }) => {
-    console.log(N);
     if (!N) {
       emit("sleep: missing operand");
 

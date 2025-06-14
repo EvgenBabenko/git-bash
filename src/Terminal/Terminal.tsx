@@ -24,6 +24,11 @@ export const Terminal = ({ onInit, tree }: Props) => {
   const cli = useRef<Cli | null>(null);
   const [initialization, setInitialization] = useState(true);
   const [initComponent, setInitComponent] = useState<React.ReactNode>(null);
+  const [prompt, setPrompt] = useState<{
+    id: string;
+    question: string;
+    resolve: (value: string) => void;
+  } | null>(null);
 
   useEffect(() => {
     cli.current = new Cli(tree, inputRef, terminalRef);
@@ -72,6 +77,13 @@ export const Terminal = ({ onInit, tree }: Props) => {
 
       setItems((prev) => [...prev, item]);
     });
+    emitter.on("CLI_PROMPT", (item) => {
+      setPrompt({
+        id: item.id,
+        question: item.question,
+        resolve: item.resolve,
+      });
+    });
 
     if (onInit) {
       onInit({ path: cli.current.path, userName: USER_NAME })
@@ -97,6 +109,7 @@ export const Terminal = ({ onInit, tree }: Props) => {
       emitter.off("CLI_INITIALIZATION");
       emitter.off("CLI_UPDATE_ITEM");
       emitter.off("CLI_ADD_ITEM");
+      emitter.off("CLI_PROMPT");
     };
   }, []);
 
@@ -119,6 +132,27 @@ export const Terminal = ({ onInit, tree }: Props) => {
           </div>
         );
       })}
+
+      {prompt && (
+        <>
+          <div>{prompt.question}</div>
+          <input
+            type="text"
+            autoFocus
+            style={{ caretColor: "white" }}
+            autoComplete="off"
+            className="bg-transparent border-none text-white outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const value = e.currentTarget.value;
+                e.currentTarget.value = "";
+                prompt.resolve(value);
+                setPrompt(null);
+              }
+            }}
+          />
+        </>
+      )}
 
       <div
         style={{

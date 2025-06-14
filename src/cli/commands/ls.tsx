@@ -8,7 +8,7 @@ export const ls: Command = {
     const children = cli.getChildren();
 
     if (!children) {
-      return <div>no such files or directories</div>;
+      return "no such files or directories";
     }
 
     return children.map((item) => {
