@@ -94,6 +94,7 @@ export class Cli {
     // const args = input.trim().split(/\s+/);
     const args = input.split(" ").filter(Boolean);
     const arg = args[0];
+    const help = args.find((el) => el === "--help");
 
     const isCommand = !arg.includes("/");
 
@@ -133,11 +134,17 @@ export class Cli {
       return;
     }
 
-    const command = this.registry.get(args[0]);
+    const command = this.registry.get(arg);
 
     if (!command) {
-      const output = `bash: ${args[0]}: command not found`;
+      const output = `bash: ${arg}: command not found`;
       emitter.emit("CLI_ADD_ITEM", { ...item, output });
+
+      return;
+    }
+
+    if (help) {
+      emitter.emit("CLI_ADD_ITEM", { ...item, output: command.help });
 
       return;
     }
