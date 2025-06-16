@@ -7,6 +7,6 @@ export const exit: Command = {
   run: async ({ emit }) => {
     emit("logout");
     await delay(300);
-    emitter.emit("CLI_EXIT");
+    emitter.emit("EXIT");
   },
 };

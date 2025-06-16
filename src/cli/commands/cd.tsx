@@ -20,7 +20,7 @@ export const cd: Command = {
     // Go to root if no path is provided
     if (!path) {
       cli.path = rootPath;
-      emitter.emit("CLI_PATH", cli.path);
+      emitter.emit("PATH", cli.path);
       return "";
     }
 
@@ -53,7 +53,7 @@ export const cd: Command = {
     }
 
     cli.path = currentPathSegments.join("/");
-    emitter.emit("CLI_PATH", cli.path);
+    emitter.emit("PATH", cli.path);
 
     return "";
   },
