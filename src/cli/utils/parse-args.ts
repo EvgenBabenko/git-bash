@@ -1,4 +1,3 @@
-/** @description converts ["-tg", "-r", "-f", test, -p folder] to { "-t": '', "-g": '', "-r": '', "-f": 'test', "test": '', "-p": 'folder', "folder": '' } */
 export const parseArgs = (args: string[]) => {
   const map = new Map<string, string>();
 
@@ -11,12 +10,14 @@ export const parseArgs = (args: string[]) => {
         .slice(1)
         .split("")
         .map((f) => `-${f}`);
+
       for (const flag of splitFlags) {
         map.set(flag, "");
       }
     } else if (current.startsWith("-")) {
       // Single flag
       const next = args[i + 1];
+
       if (next && !next.startsWith("-")) {
         map.set(current, next);
         map.set(next, "");
