@@ -1,4 +1,5 @@
 import { Command } from "../command-registry";
+import { extractValues } from "../utils/extract-values";
 import { parseArgs } from "../utils/parse-args";
 
 export const rm: Command = {
@@ -16,13 +17,9 @@ export const rm: Command = {
       each listed directory, too, along with all of its contents.
     </>
   ),
-  run: async ({ cli, args: [, ...rest] }) => {
-    const argv = parseArgs(rest);
-
-    const toDelete = [...argv]
-      .map((el) => el[0])
-      .filter((el) => !el.startsWith("-"));
-
+  run: async ({ cli, args }) => {
+    const argv = parseArgs(args);
+    const toDelete = extractValues(args, []);
     const children = cli.getChildren();
 
     if (!children) {

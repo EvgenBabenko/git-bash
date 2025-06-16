@@ -1,20 +1,13 @@
+/**
+ *  @description doesn't work with combined flags like "-rf", please use normalizeArgs before
+ */
 export const parseArgs = (args: string[]) => {
   const map = new Map<string, string>();
 
   for (let i = 0; i < args.length; i++) {
     const current = args[i];
 
-    if (current.startsWith("-") && current.length > 2) {
-      // Handle combined flags like "-rf"
-      const splitFlags = current
-        .slice(1)
-        .split("")
-        .map((f) => `-${f}`);
-
-      for (const flag of splitFlags) {
-        map.set(flag, "");
-      }
-    } else if (current.startsWith("-")) {
+    if (current.startsWith("-")) {
       // Single flag
       const next = args[i + 1];
 

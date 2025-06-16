@@ -13,7 +13,7 @@ export const cd: Command = {
       </div>
     </div>
   ),
-  run: ({ args: [, P], cli }) => {
+  run: ({ args: [P], cli }) => {
     const path = P;
     const rootPath = "";
 

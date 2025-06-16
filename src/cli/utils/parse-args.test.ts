@@ -2,27 +2,6 @@ import { it } from "node:test";
 import assert from "node:assert/strict";
 import { parseArgs } from "./parse-args";
 
-console.log("✅ test file loaded");
-
-it('parses combined short flags like "-rf"', () => {
-  const args = ["-rf"];
-  const result = parseArgs(args);
-  assert.deepEqual(Object.fromEntries(result), {
-    "-r": "",
-    "-f": "",
-  });
-});
-
-it('parses combined short flags like "-rf" with value after', () => {
-  const args = ["-rf", "value"];
-  const result = parseArgs(args);
-  assert.deepEqual(Object.fromEntries(result), {
-    "-r": "",
-    "-f": "",
-    value: "",
-  });
-});
-
 it("parses single flags with values", () => {
   const args = ["-f", "test"];
   const result = parseArgs(args);
@@ -41,11 +20,9 @@ it("parses standalone flags without values", () => {
 });
 
 it("parses a mixture of combined, single, and standalone values", () => {
-  const args = ["-tg", "-r", "-f", "test", "-p", "folder"];
+  const args = ["-r", "-f", "test", "-p", "folder"];
   const result = parseArgs(args);
   assert.deepEqual(Object.fromEntries(result), {
-    "-t": "",
-    "-g": "",
     "-r": "",
     "-f": "test",
     test: "",

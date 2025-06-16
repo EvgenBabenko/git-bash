@@ -13,6 +13,7 @@ import { mkdir } from "./commands/mkdir";
 import { rm } from "./commands/rm";
 import { touch } from "./commands/touch";
 import { promt } from "./commands/promt";
+import { normalizeArgs } from "./utils/normalize-args";
 
 export interface Tree {
   name: string;
@@ -98,12 +99,11 @@ export class Cli {
       return;
     }
 
-    // const args = input.trim().split(/\s+/);
-    const args = input.split(" ").filter(Boolean);
-    const arg = args[0];
-    const help = args.find((el) => el === "--help");
-
-    const isCommand = !arg.includes("/");
+    const rawArgs = input.split(" ").filter(Boolean);
+    const [argument, ...rest] = rawArgs;
+    const args = normalizeArgs(rest);
+    const help = input.includes("--help");
+    const isCommand = !argument.includes("/");
 
     const item: Item = {
       id: Date.now().toString(),
@@ -113,13 +113,12 @@ export class Cli {
     };
 
     if (!isCommand) {
-      const fileName = arg.split("/").pop() ?? "";
-
+      const fileName = argument.split("/").pop() ?? "";
       const items = this.getChildren();
       const element = items?.find((el) => el.name === fileName);
 
       if (!element) {
-        const output = `bash: ${arg}: No such file or directory`;
+        const output = `bash: ${argument}: No such file or directory`;
         emitter.emit("ADD_ITEM", { ...item, output });
 
         return;
@@ -141,10 +140,10 @@ export class Cli {
       return;
     }
 
-    const command = this.registry.get(arg);
+    const command = this.registry.get(argument);
 
     if (!command) {
-      const output = `bash: ${arg}: command not found`;
+      const output = `bash: ${argument}: command not found`;
       emitter.emit("ADD_ITEM", { ...item, output });
 
       return;

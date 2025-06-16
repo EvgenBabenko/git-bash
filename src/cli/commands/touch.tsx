@@ -1,17 +1,14 @@
 import { Command } from "../command-registry";
+import { extractValues } from "../utils/extract-values";
 import { parseArgs } from "../utils/parse-args";
 
 export const touch: Command = {
   name: "touch",
   description: "Create the FILE(s).",
   help: "Usage: touch [OPTION]... FILE...",
-  run: ({ cli, args: [, ...rest] }) => {
-    const argv = parseArgs(rest);
-
-    const toCreate = [...argv]
-      .map((el) => el[0])
-      .filter((el) => !el.includes("-"));
-
+  run: ({ cli, args }) => {
+    const argv = parseArgs(args);
+    const toCreate = extractValues(args, []);
     const children = cli.getChildren();
 
     if (!children) {

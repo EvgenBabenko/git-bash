@@ -1,13 +1,13 @@
 import { Command } from "../command-registry";
+import { extractValues } from "../utils/extract-values";
 import { parseArgs } from "../utils/parse-args";
 
 export const mkdir: Command = {
   name: "mkdir",
   description: "Create the DIRECTORY(ies), if they do not already exist.",
   help: "Usage: mkdir [OPTION]... DIRECTORY...",
-  run: ({ cli, args: [, ...rest] }) => {
-    const argv = parseArgs(rest);
-
+  run: ({ cli, args }) => {
+    const argv = parseArgs(args);
     const children = cli.getChildren();
 
     if (!children) {
@@ -39,9 +39,7 @@ export const mkdir: Command = {
     //   }
     // }
 
-    const directory = [...argv]
-      .map((el) => el[0])
-      .filter((el) => !el.includes("-"))[0];
+    const directory = extractValues(args, [])[0];
 
     if (!directory) {
       return "mkdir: missing operand";
