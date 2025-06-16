@@ -120,14 +120,14 @@ export class Cli {
 
       if (!element) {
         const output = `bash: ${arg}: No such file or directory`;
-        emitter.emit("CLI_ADD_ITEM", { ...item, output });
+        emitter.emit("ADD_ITEM", { ...item, output });
 
         return;
       }
 
       if (!element.content) {
         const output = `bash: ${element.content}: content not found`;
-        emitter.emit("CLI_ADD_ITEM", { ...item, output });
+        emitter.emit("ADD_ITEM", { ...item, output });
 
         return;
       }
@@ -136,7 +136,7 @@ export class Cli {
         typeof element.content === "function"
           ? React.createElement(element.content)
           : element.content ?? "";
-      emitter.emit("CLI_ADD_ITEM", { ...item, output });
+      emitter.emit("ADD_ITEM", { ...item, output });
 
       return;
     }
@@ -145,21 +145,21 @@ export class Cli {
 
     if (!command) {
       const output = `bash: ${arg}: command not found`;
-      emitter.emit("CLI_ADD_ITEM", { ...item, output });
+      emitter.emit("ADD_ITEM", { ...item, output });
 
       return;
     }
 
     if (help) {
-      emitter.emit("CLI_ADD_ITEM", { ...item, output: command.help });
+      emitter.emit("ADD_ITEM", { ...item, output: command.help });
 
       return;
     }
 
-    emitter.emit("CLI_ADD_ITEM", item);
+    emitter.emit("ADD_ITEM", item);
 
     const emit = (output: React.ReactNode) => {
-      emitter.emit("CLI_UPDATE_ITEM", { ...item, output });
+      emitter.emit("UPDATE_ITEM", { ...item, output });
     };
 
     try {
@@ -167,12 +167,12 @@ export class Cli {
 
       if (result instanceof Promise) {
         // Async command: let it call emit() internally
-        emitter.emit("CLI_PROCESSING_STATUS", true);
+        emitter.emit("PROCESSING_STATUS", true);
 
         result
           .catch((e) => emit(`Error: ${e.message}`))
           .finally(() => {
-            emitter.emit("CLI_PROCESSING_STATUS", false);
+            emitter.emit("PROCESSING_STATUS", false);
           });
       } else {
         // Sync command: returned output directly
@@ -187,7 +187,7 @@ export class Cli {
 
   promptUser(question: string): Promise<string> {
     return new Promise((resolve) => {
-      emitter.emit("CLI_PROMPT", {
+      emitter.emit("PROMPT", {
         id: Date.now().toString(),
         resolve,
         question,

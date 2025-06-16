@@ -9,12 +9,12 @@ export const App = () => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    emitter.on("CLI_EXIT", () => {
+    emitter.on("EXIT", () => {
       setIsVisible(false);
     });
 
     return () => {
-      emitter.off("CLI_EXIT");
+      emitter.off("EXIT");
     };
   });
 
@@ -27,8 +27,8 @@ export const App = () => {
             // onInit={async () => {
             //   // await delay(5000);
 
-            //   // emitter.emit("CLI_INITIALIZATION", false);
-            //   // emitter.emit("CLI_PROCESSING_STATUS", false);
+            //   // emitter.emit("INITIALIZATION", false);
+            //   // emitter.emit("PROCESSING_STATUS", false);
 
             //   // Promise.resolve()
             //   //   .then(() => {
@@ -40,7 +40,7 @@ export const App = () => {
             //   //     });
             //   //   })
             //   //   .then(() => {
-            //   //     emitter.emit("CLI_PROCESSING_STATUS", false);
+            //   //     emitter.emit("PROCESSING_STATUS", false);
             //   //   });
             // }}
           />

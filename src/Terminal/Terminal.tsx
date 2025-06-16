@@ -53,31 +53,31 @@ export const Terminal = ({ onInit, tree }: Props) => {
 
     cli.current.addEventListener();
 
-    emitter.on("CLI_PATH", (path) => {
+    emitter.on("PATH", (path) => {
       setPath(path);
     });
-    emitter.on("CLI_CLEAR", () => {
+    emitter.on("CLEAR", () => {
       setItems([]);
     });
-    emitter.on("CLI_PROCESSING_STATUS", (status) => {
+    emitter.on("PROCESSING_STATUS", (status) => {
       setProcessing(status);
     });
-    emitter.on("CLI_INITIALIZATION", (status) => {
+    emitter.on("INITIALIZATION", (status) => {
       setInitialization(status);
     });
-    emitter.on("CLI_UPDATE_ITEM", (command) => {
+    emitter.on("UPDATE_ITEM", (command) => {
       setItems((prev) =>
         prev.map((item) => (item.id === command.id ? command : item))
       );
     });
-    emitter.on("CLI_ADD_ITEM", (item) => {
+    emitter.on("ADD_ITEM", (item) => {
       if (cli.current) {
         cli.current.addItem(item);
       }
 
       setItems((prev) => [...prev, item]);
     });
-    emitter.on("CLI_PROMPT", (item) => {
+    emitter.on("PROMPT", (item) => {
       setPrompt({
         id: item.id,
         question: item.question,
@@ -103,13 +103,13 @@ export const Terminal = ({ onInit, tree }: Props) => {
 
       cli.current?.removeEventListener();
 
-      emitter.off("CLI_PATH");
-      emitter.off("CLI_CLEAR");
-      emitter.off("CLI_PROCESSING_STATUS");
-      emitter.off("CLI_INITIALIZATION");
-      emitter.off("CLI_UPDATE_ITEM");
-      emitter.off("CLI_ADD_ITEM");
-      emitter.off("CLI_PROMPT");
+      emitter.off("PATH");
+      emitter.off("CLEAR");
+      emitter.off("PROCESSING_STATUS");
+      emitter.off("INITIALIZATION");
+      emitter.off("UPDATE_ITEM");
+      emitter.off("ADD_ITEM");
+      emitter.off("PROMPT");
     };
   }, []);
 

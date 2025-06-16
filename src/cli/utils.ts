@@ -10,14 +10,14 @@ export function scrollToBottom(ref: React.RefObject<HTMLDivElement | null>) {
 }
 
 type Events = {
-  CLI_INITIALIZATION: boolean;
-  CLI_PROCESSING_STATUS: boolean;
-  CLI_CLEAR: void;
-  CLI_PATH: string;
-  CLI_EXIT: void;
-  CLI_UPDATE_ITEM: Item;
-  CLI_ADD_ITEM: Item;
-  CLI_PROMPT: PromtItem;
+  INITIALIZATION: boolean;
+  PROCESSING_STATUS: boolean;
+  CLEAR: void;
+  PATH: string;
+  EXIT: void;
+  UPDATE_ITEM: Item;
+  ADD_ITEM: Item;
+  PROMPT: PromtItem;
 };
 
 export const emitter = mitt<Events>();

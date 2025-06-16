@@ -6,14 +6,14 @@ export const Hello = () => {
 
   const asyncFn = async () => {
     await delay(5000).then(() => {
-      emitter.emit("CLI_PROCESSING_STATUS", false);
+      emitter.emit("PROCESSING_STATUS", false);
       setRes("World");
     });
   };
 
   useEffect(() => {
     setRes("Hello");
-    emitter.emit("CLI_PROCESSING_STATUS", true);
+    emitter.emit("PROCESSING_STATUS", true);
 
     asyncFn();
   }, []);
