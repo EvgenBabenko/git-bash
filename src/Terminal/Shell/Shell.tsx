@@ -32,7 +32,7 @@ export const Shell = ({ children, path, terminalRef, userName }: Props) => {
       <Header userName={userName} path={path} />
 
       <div
-        className="flex-1 overflow-y-auto p-1 text-sm font-[Roboto_Mono]"
+        className="flex-1 overflow-y-auto p-1 text-xs font-mono"
         ref={terminalRef}
       >
         {children}

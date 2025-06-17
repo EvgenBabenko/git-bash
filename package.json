@@ -25,6 +25,7 @@
     "test": "tsx --test"
   },
   "dependencies": {
+    "@fontsource/roboto-mono": "5.2.6",
     "lucide-react": "0.511.0",
     "mitt": "3.0.1"
   },

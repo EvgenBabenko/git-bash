@@ -1,4 +1,5 @@
 import "./index.css";
+import "@fontsource/roboto-mono";
 
 export { Terminal } from "./Terminal/Terminal";
 export { emitter } from "./cli/utils";
