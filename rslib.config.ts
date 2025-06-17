@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [pluginReact()],
   source: {
     entry: {
-      index: ["./src/**"],
+      index: ["./src/**", "!src/**/*.test.ts"],
     },
   },
   lib: [
