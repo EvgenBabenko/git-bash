@@ -1,7 +1,7 @@
 import { jsx, jsxs } from "react/jsx-runtime";
 import "react";
 import { Minus, Square, X } from "lucide-react";
-import git_bash_js_default from "../../assets/img/git-bash.js";
+import git_bash from "../../assets/img/git-bash.js";
 const Header = ({ userName, path })=>{
     const pathHeader = `MINGW64:/c/${userName}${path ? `/${path}` : ""}`;
     return /*#__PURE__*/ jsxs("div", {
@@ -11,7 +11,7 @@ const Header = ({ userName, path })=>{
                 className: "flex items-center justify-center gap-x-1",
                 children: [
                     /*#__PURE__*/ jsx("img", {
-                        src: git_bash_js_default,
+                        src: git_bash,
                         width: "16",
                         height: "16"
                     }),
@@ -46,7 +46,7 @@ const Shell = ({ children, path, terminalRef, userName })=>/*#__PURE__*/ jsxs("d
                 path: path
             }),
             /*#__PURE__*/ jsx("div", {
-                className: "flex-1 overflow-y-auto p-1 text-sm font-[Roboto_Mono]",
+                className: "flex-1 overflow-y-auto p-1 text-xs font-mono",
                 ref: terminalRef,
                 children: children
             })

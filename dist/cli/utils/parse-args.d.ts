@@ -1,2 +1,4 @@
-/** @description converts ["-tg", "-r", "-f", test, -p folder] to { "-t": '', "-g": '', "-r": '', "-f": 'test', "test": '', "-p": 'folder', "folder": '' } */
+/**
+ *  @description doesn't work with combined flags like "-rf", please use normalizeArgs before
+ */
 export declare const parseArgs: (args: string[]) => Map<string, string>;

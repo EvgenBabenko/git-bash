@@ -1,5 +1,5 @@
-import { jsx, jsxs } from "react/jsx-runtime";
-import external_react_default, { useEffect, useRef, useState } from "react";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import react, { useEffect, useRef, useState } from "react";
 import { Cli } from "../cli/core.js";
 import { Shell } from "./Shell/Shell.js";
 import { ShellTitle } from "./ShellTitle/ShellTitle.js";
@@ -14,6 +14,7 @@ const Terminal = ({ onInit, tree })=>{
     const cli = useRef(null);
     const [initialization, setInitialization] = useState(true);
     const [initComponent, setInitComponent] = useState(null);
+    const [prompt, setPrompt] = useState(null);
     useEffect(()=>{
         cli.current = new Cli(tree, inputRef, terminalRef);
         setPath(cli.current.path);
@@ -25,33 +26,40 @@ const Terminal = ({ onInit, tree })=>{
             signal: controller.signal
         });
         cli.current.addEventListener();
-        emitter.on("CLI_PATH", (path)=>{
+        emitter.on("PATH", (path)=>{
             setPath(path);
         });
-        emitter.on("CLI_CLEAR", ()=>{
+        emitter.on("CLEAR", ()=>{
             setItems([]);
         });
-        emitter.on("CLI_PROCESSING_STATUS", (status)=>{
+        emitter.on("PROCESSING_STATUS", (status)=>{
             setProcessing(status);
         });
-        emitter.on("CLI_INITIALIZATION", (status)=>{
+        emitter.on("INITIALIZATION", (status)=>{
             setInitialization(status);
         });
-        emitter.on("CLI_UPDATE_ITEM", (command)=>{
+        emitter.on("UPDATE_ITEM", (command)=>{
             setItems((prev)=>prev.map((item)=>item.id === command.id ? command : item));
         });
-        emitter.on("CLI_ADD_ITEM", (item)=>{
+        emitter.on("ADD_ITEM", (item)=>{
             if (cli.current) cli.current.addItem(item);
             setItems((prev)=>[
                     ...prev,
                     item
                 ]);
         });
+        emitter.on("PROMPT", (item)=>{
+            setPrompt({
+                id: item.id,
+                question: item.question,
+                resolve: item.resolve
+            });
+        });
         if (onInit) onInit({
             path: cli.current.path,
             userName: USER_NAME
         }).then((res)=>{
-            if (/*#__PURE__*/ external_react_default.isValidElement(res)) setInitComponent(res);
+            if (/*#__PURE__*/ react.isValidElement(res)) setInitComponent(res);
         }).catch((err)=>console.error(err));
         else {
             setInitialization(false);
@@ -60,12 +68,13 @@ const Terminal = ({ onInit, tree })=>{
         return ()=>{
             controller.abort();
             cli.current?.removeEventListener();
-            emitter.off("CLI_PATH");
-            emitter.off("CLI_CLEAR");
-            emitter.off("CLI_PROCESSING_STATUS");
-            emitter.off("CLI_INITIALIZATION");
-            emitter.off("CLI_UPDATE_ITEM");
-            emitter.off("CLI_ADD_ITEM");
+            emitter.off("PATH");
+            emitter.off("CLEAR");
+            emitter.off("PROCESSING_STATUS");
+            emitter.off("INITIALIZATION");
+            emitter.off("UPDATE_ITEM");
+            emitter.off("ADD_ITEM");
+            emitter.off("PROMPT");
         };
     }, []);
     useEffect(()=>{
@@ -94,6 +103,30 @@ const Terminal = ({ onInit, tree })=>{
                         item.output
                     ]
                 }, item.id)),
+            prompt && /*#__PURE__*/ jsxs(Fragment, {
+                children: [
+                    /*#__PURE__*/ jsx("div", {
+                        children: prompt.question
+                    }),
+                    /*#__PURE__*/ jsx("input", {
+                        type: "text",
+                        autoFocus: true,
+                        style: {
+                            caretColor: "white"
+                        },
+                        autoComplete: "off",
+                        className: "bg-transparent border-none text-white outline-none",
+                        onKeyDown: (e)=>{
+                            if ("Enter" === e.key) {
+                                const value = e.currentTarget.value;
+                                e.currentTarget.value = "";
+                                prompt.resolve(value);
+                                setPrompt(null);
+                            }
+                        }
+                    })
+                ]
+            }),
             /*#__PURE__*/ jsxs("div", {
                 style: {
                     visibility: processing ? "hidden" : "visible",

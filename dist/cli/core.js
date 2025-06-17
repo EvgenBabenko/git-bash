@@ -1,4 +1,4 @@
-import external_react_default from "react";
+import react from "react";
 import { CommandRegistry } from "./command-registry.js";
 import { cd } from "./commands/cd.js";
 import { help as help_js_help } from "./commands/help.js";
@@ -11,6 +11,8 @@ import { sleep } from "./commands/sleep.js";
 import { mkdir } from "./commands/mkdir.js";
 import { rm } from "./commands/rm.js";
 import { touch } from "./commands/touch.js";
+import { promt } from "./commands/promt.js";
+import { normalizeArgs } from "./utils/normalize-args.js";
 class Cli {
     tree;
     inputRef;
@@ -56,10 +58,11 @@ class Cli {
     }
     execute(input) {
         if (!input) return;
-        const args = input.split(" ").filter(Boolean);
-        const arg = args[0];
-        const help = args.find((el)=>"--help" === el);
-        const isCommand = !arg.includes("/");
+        const rawArgs = input.split(" ").filter(Boolean);
+        const [argument, ...rest] = rawArgs;
+        const args = normalizeArgs(rest);
+        const help = input.includes("--help");
+        const isCommand = !argument.includes("/");
         const item = {
             id: Date.now().toString(),
             input,
@@ -67,12 +70,12 @@ class Cli {
             path: this.path
         };
         if (!isCommand) {
-            const fileName = arg.split("/").pop() ?? "";
+            const fileName = argument.split("/").pop() ?? "";
             const items = this.getChildren();
             const element = items?.find((el)=>el.name === fileName);
             if (!element) {
-                const output = `bash: ${arg}: No such file or directory`;
-                emitter.emit("CLI_ADD_ITEM", {
+                const output = `bash: ${argument}: No such file or directory`;
+                emitter.emit("ADD_ITEM", {
                     ...item,
                     output
                 });
@@ -80,35 +83,35 @@ class Cli {
             }
             if (!element.content) {
                 const output = `bash: ${element.content}: content not found`;
-                emitter.emit("CLI_ADD_ITEM", {
+                emitter.emit("ADD_ITEM", {
                     ...item,
                     output
                 });
                 return;
             }
-            const output = "function" == typeof element.content ? /*#__PURE__*/ external_react_default.createElement(element.content) : element.content ?? "";
-            emitter.emit("CLI_ADD_ITEM", {
+            const output = "function" == typeof element.content ? /*#__PURE__*/ react.createElement(element.content) : element.content ?? "";
+            emitter.emit("ADD_ITEM", {
                 ...item,
                 output
             });
             return;
         }
-        const command = this.registry.get(arg);
+        const command = this.registry.get(argument);
         if (!command) {
-            const output = `bash: ${arg}: command not found`;
-            emitter.emit("CLI_ADD_ITEM", {
+            const output = `bash: ${argument}: command not found`;
+            emitter.emit("ADD_ITEM", {
                 ...item,
                 output
             });
             return;
         }
-        if (help) return void emitter.emit("CLI_ADD_ITEM", {
+        if (help) return void emitter.emit("ADD_ITEM", {
             ...item,
             output: command.help
         });
-        emitter.emit("CLI_ADD_ITEM", item);
+        emitter.emit("ADD_ITEM", item);
         const emit = (output)=>{
-            emitter.emit("CLI_UPDATE_ITEM", {
+            emitter.emit("UPDATE_ITEM", {
                 ...item,
                 output
             });
@@ -120,9 +123,9 @@ class Cli {
                 cli: this
             });
             if (result instanceof Promise) {
-                emitter.emit("CLI_PROCESSING_STATUS", true);
+                emitter.emit("PROCESSING_STATUS", true);
                 result.catch((e)=>emit(`Error: ${e.message}`)).finally(()=>{
-                    emitter.emit("CLI_PROCESSING_STATUS", false);
+                    emitter.emit("PROCESSING_STATUS", false);
                 });
             } else emit(result);
         } catch (error) {
@@ -130,6 +133,15 @@ class Cli {
         } finally{
             scrollToBottom(this.terminalRef);
         }
+    }
+    promptUser(question) {
+        return new Promise((resolve)=>{
+            emitter.emit("PROMPT", {
+                id: Date.now().toString(),
+                resolve,
+                question
+            });
+        });
     }
     handleKeyUp(e) {
         switch(e.code){
@@ -176,6 +188,7 @@ class Cli {
         this.registerCommand(mkdir);
         this.registerCommand(rm);
         this.registerCommand(touch);
+        this.registerCommand(promt);
     }
 }
 export { Cli };

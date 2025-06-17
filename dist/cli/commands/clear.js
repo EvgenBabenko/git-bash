@@ -4,7 +4,7 @@ const clear = {
     description: "Clear the shell screen.",
     run: ({ cli })=>{
         cli.items = [];
-        emitter.emit("CLI_CLEAR");
+        emitter.emit("CLEAR");
         return "";
     }
 };

@@ -7,11 +7,11 @@ function help(regisrty) {
             const commands = regisrty.getAll();
             return /*#__PURE__*/ jsxs(Fragment, {
                 children: [
-                    "GNU bash, version 5.1.16(1)-release (x86_64-pc-msys)",
+                    "GNU bash, version 5.1.16(1)-release (x86_64-pc-msys) ",
                     /*#__PURE__*/ jsx("br", {}),
-                    "These shell commands are defined internally.",
+                    "These shell commands are defined internally. ",
                     /*#__PURE__*/ jsx("br", {}),
-                    "Type `name --help' to find out more about the function `name'.",
+                    "Type `name --help' to find out more about the function `name'. ",
                     /*#__PURE__*/ jsx("br", {}),
                     /*#__PURE__*/ jsx("br", {}),
                     commands.map((c)=>/*#__PURE__*/ jsxs("div", {

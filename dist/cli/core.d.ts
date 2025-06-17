@@ -13,6 +13,11 @@ export interface Item {
     output: React.ReactNode;
     path: string;
 }
+export interface PromtItem {
+    id: string;
+    resolve: (value: string) => void;
+    question: string;
+}
 export declare class Cli {
     private tree;
     private inputRef;
@@ -27,6 +32,7 @@ export declare class Cli {
     getChildren(path?: string): Tree[] | null;
     addItem(item: Item): void;
     execute(input: string): void;
+    promptUser(question: string): Promise<string>;
     handleKeyUp(e: KeyboardEvent): void;
     getRegistry(): CommandRegistry;
     registerCommand(command: ICommand): void;

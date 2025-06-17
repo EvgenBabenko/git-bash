@@ -16,12 +16,12 @@ const cd = {
             })
         ]
     }),
-    run: ({ args: [, P], cli })=>{
+    run: ({ args: [P], cli })=>{
         const path = P;
         const rootPath = "";
         if (!path) {
             cli.path = rootPath;
-            emitter.emit("CLI_PATH", cli.path);
+            emitter.emit("PATH", cli.path);
             return "";
         }
         let currentPathSegments = cli.path.split("/").filter(Boolean);
@@ -40,7 +40,7 @@ const cd = {
             currentChildren = cli.getChildren(currentPathSegments.join("/"));
         }
         cli.path = currentPathSegments.join("/");
-        emitter.emit("CLI_PATH", cli.path);
+        emitter.emit("PATH", cli.path);
         return "";
     }
 };

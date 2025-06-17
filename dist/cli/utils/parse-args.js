@@ -2,10 +2,7 @@ const parseArgs = (args)=>{
     const map = new Map();
     for(let i = 0; i < args.length; i++){
         const current = args[i];
-        if (current.startsWith("-") && current.length > 2) {
-            const splitFlags = current.slice(1).split("").map((f)=>`-${f}`);
-            for (const flag of splitFlags)map.set(flag, "");
-        } else if (current.startsWith("-")) {
+        if (current.startsWith("-")) {
             const next = args[i + 1];
             if (next && !next.startsWith("-")) {
                 map.set(current, next);

@@ -1,13 +1,13 @@
 import { Command } from "../command-registry";
 import { extractValues } from "../utils/extract-values";
-import { parseArgs } from "../utils/parse-args";
+// import { parseArgs } from "../utils/parse-args";
 
 export const mkdir: Command = {
   name: "mkdir",
   description: "Create the DIRECTORY(ies), if they do not already exist.",
   help: "Usage: mkdir [OPTION]... DIRECTORY...",
   run: ({ cli, args }) => {
-    const argv = parseArgs(args);
+    // const argv = parseArgs(args);
     const children = cli.getChildren();
 
     if (!children) {
