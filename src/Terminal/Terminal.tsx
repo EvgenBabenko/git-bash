@@ -5,17 +5,16 @@ import { Shell } from "./Shell/Shell";
 import { ShellTitle } from "./ShellTitle/ShellTitle";
 import { emitter } from "@/cli/utils";
 
-const USER_NAME = "guest";
-
 interface Props {
   tree: Tree;
   onInit?: (props: {
     path: string;
     userName: string;
   }) => Promise<void | React.ReactNode>;
+  userName?: string;
 }
 
-export const Terminal = ({ onInit, tree }: Props) => {
+export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const [path, setPath] = useState("");
@@ -86,7 +85,7 @@ export const Terminal = ({ onInit, tree }: Props) => {
     });
 
     if (onInit) {
-      onInit({ path: cli.current.path, userName: USER_NAME })
+      onInit({ path: cli.current.path, userName })
         .then((res) => {
           if (React.isValidElement(res)) {
             setInitComponent(res);
@@ -120,13 +119,13 @@ export const Terminal = ({ onInit, tree }: Props) => {
   }, [processing]);
 
   return (
-    <Shell path={path} terminalRef={terminalRef} userName={USER_NAME}>
+    <Shell path={path} terminalRef={terminalRef} userName={userName}>
       {initialization && initComponent}
 
       {items.map((item) => {
         return (
           <div key={item.id}>
-            <ShellTitle path={item.path} userName={USER_NAME} />
+            <ShellTitle path={item.path} userName={userName} />
             <div>$ {item.input}</div>
             {item.output}
           </div>
@@ -161,7 +160,7 @@ export const Terminal = ({ onInit, tree }: Props) => {
           height: processing ? 0 : undefined,
         }}
       >
-        <ShellTitle path={path} userName={USER_NAME} />
+        <ShellTitle path={path} userName={userName} />
         <div>
           <label htmlFor="input">$ </label>
           <input
