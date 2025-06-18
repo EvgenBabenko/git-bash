@@ -1,5 +1,6 @@
 /**
- *  @description doesn't work with combined flags like "-rf", please use normalizeArgs before
+ * @description doesn't work with combined flags like "-rf", please use normalizeArgs before
+ * @todo please consider using parseArgs from node:utils
  */
 export const parseArgs = (args: string[]) => {
   const map = new Map<string, string>();

@@ -21,7 +21,7 @@ export type Tree =
       name: string;
       path: string;
       children: Tree[];
-      createdAt?: string;
+      createdAt: string;
       updatedAt?: string;
     }
   | {
@@ -29,7 +29,7 @@ export type Tree =
       name: string;
       path: string;
       content: React.FC | string;
-      createdAt?: string;
+      createdAt: string;
       updatedAt?: string;
     };
 

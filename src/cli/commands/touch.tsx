@@ -26,6 +26,7 @@ export const touch: Command = {
         type: "file",
         name: el,
         path: `${cli.path}"/"${el}`,
+        createdAt: new Date().toISOString(),
         content: "",
       });
     });

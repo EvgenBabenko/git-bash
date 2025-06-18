@@ -53,6 +53,7 @@ export const mkdir: Command = {
       type: "folder",
       name: directory,
       path: `${cli.path}"/"${directory}`,
+      createdAt: new Date().toISOString(),
       children: [],
     });
 
