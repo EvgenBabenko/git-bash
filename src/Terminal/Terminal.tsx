@@ -30,6 +30,7 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     question: string;
     resolve: (value: string) => void;
   } | null>(null);
+  const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
     cli.current = new Cli(tree, terminalRef);
@@ -53,6 +54,9 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
       }
     );
 
+    emitter.on("EXIT", () => {
+      setIsExiting(true);
+    });
     emitter.on("PATH", (path) => {
       setPath(path);
     });
@@ -101,6 +105,7 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     return () => {
       controller.abort();
 
+      emitter.off("EXIT");
       emitter.off("PATH");
       emitter.off("CLEAR");
       emitter.off("PROCESSING_STATUS");
@@ -151,6 +156,10 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
       inputRef.current.style.height = inputRef.current.scrollHeight + "px";
       cli.current.execute(input);
     }
+  }
+
+  if (isExiting) {
+    return null;
   }
 
   return (

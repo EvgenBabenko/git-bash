@@ -70,6 +70,7 @@ The terminal listens to global events via an internal emitter:
 
 | Event Name          | Description                                   |
 | ------------------- | --------------------------------------------- |
+| `EXIT`              | Exit the shell                                |
 | `PATH`              | Updates current working path                  |
 | `CLEAR`             | Clears the terminal history                   |
 | `PROCESSING_STATUS` | Enables/disables user input                   |
