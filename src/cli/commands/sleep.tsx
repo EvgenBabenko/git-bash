@@ -39,7 +39,7 @@ export const sleep: Command = {
       amount of time specified by the sum of their values.
     </>
   ),
-  run: async ({ args, emit }) => {
+  run: async ({ args, emit, abortController }) => {
     const durations = extractValues(args, []);
 
     if (durations.length === 0) {
@@ -51,7 +51,7 @@ export const sleep: Command = {
     try {
       const result = durations.reduce((a, b) => a + parseDuration(b), 0);
 
-      await delay(result);
+      await delay(result, abortController.signal);
     } catch (error) {
       if (error instanceof Error) {
         emit(error.message);

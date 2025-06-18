@@ -51,6 +51,8 @@ export class Cli {
   private history = new CommandHistory();
   public items: Item[] = [];
   public path = "";
+  private isCtrlKeyPressed = false;
+  private abortController?: AbortController;
 
   constructor(
     private tree: Tree,
@@ -59,18 +61,36 @@ export class Cli {
   ) {
     this.registerDefaultCommands();
 
-    this.handleKeyUp = this.handleKeyUp.bind(this);
+    this.inputKeyUp = this.inputKeyUp.bind(this);
+    this.terminalKeyDown = this.terminalKeyDown.bind(this);
+    this.terminalKeyUp = this.terminalKeyUp.bind(this);
   }
 
   addEventListener() {
     if (this.inputRef.current) {
-      this.inputRef.current.addEventListener("keydown", this.handleKeyUp);
+      this.inputRef.current.addEventListener("keydown", this.inputKeyUp);
+    }
+
+    if (this.terminalRef.current) {
+      this.terminalRef.current.addEventListener(
+        "keydown",
+        this.terminalKeyDown
+      );
+      this.terminalRef.current.addEventListener("keyup", this.terminalKeyUp);
     }
   }
 
   removeEventListener() {
     if (this.inputRef.current) {
-      this.inputRef.current.removeEventListener("keydown", this.handleKeyUp);
+      this.inputRef.current.removeEventListener("keydown", this.inputKeyUp);
+    }
+
+    if (this.terminalRef.current) {
+      this.terminalRef.current.removeEventListener(
+        "keydown",
+        this.terminalKeyDown
+      );
+      this.terminalRef.current.removeEventListener("keyup", this.terminalKeyUp);
     }
   }
 
@@ -111,6 +131,7 @@ export class Cli {
       return;
     }
 
+    this.abortController = new AbortController();
     const rawArgs = input.split(" ").filter(Boolean);
     const [argument, ...rest] = rawArgs;
     const args = normalizeArgs(rest);
@@ -174,7 +195,12 @@ export class Cli {
     };
 
     try {
-      const result = command.run({ args, emit, cli: this });
+      const result = command.run({
+        args,
+        emit,
+        cli: this,
+        abortController: this.abortController,
+      });
 
       if (result instanceof Promise) {
         // Async command: let it call emit() internally
@@ -206,7 +232,7 @@ export class Cli {
     });
   }
 
-  handleKeyUp(e: KeyboardEvent) {
+  inputKeyUp(e: KeyboardEvent) {
     switch (e.code) {
       case "ArrowUp": {
         if (this.inputRef.current) {
@@ -246,6 +272,27 @@ export class Cli {
       default:
     }
   }
+
+  terminalKeyDown = (e: KeyboardEvent) => {
+    if (e.ctrlKey) {
+      this.isCtrlKeyPressed = true;
+    }
+
+    if (e.code === "KeyC" && this.isCtrlKeyPressed) {
+      console.log("Ctrl+C pressed");
+      // Optional: prevent default copy behavior
+      e.preventDefault();
+
+      this.abortController?.abort();
+      emitter.emit("PROCESSING_STATUS", false);
+    }
+  };
+
+  terminalKeyUp = (e: KeyboardEvent) => {
+    if (e.ctrlKey) {
+      this.isCtrlKeyPressed = false;
+    }
+  };
 
   getRegistry(): CommandRegistry {
     return this.registry;

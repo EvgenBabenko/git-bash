@@ -22,6 +22,18 @@ type Events = {
 
 export const emitter = mitt<Events>();
 
-export function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export function delay(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      resolve();
+    }, ms);
+
+    if (signal) {
+      signal.addEventListener("abort", () => {
+        console.log(555);
+        clearTimeout(timeout);
+        reject(new Error("Delay aborted"));
+      });
+    }
+  });
 }

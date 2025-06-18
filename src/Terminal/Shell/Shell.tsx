@@ -34,6 +34,8 @@ export const Shell = ({ children, path, terminalRef, userName }: Props) => {
       <div
         className="flex-1 overflow-y-auto p-1 text-xs font-mono"
         ref={terminalRef}
+        // keyboard focusable
+        tabIndex={0}
       >
         {children}
       </div>

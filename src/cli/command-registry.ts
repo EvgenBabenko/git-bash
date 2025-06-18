@@ -4,6 +4,7 @@ export interface CommandContext {
   args: string[];
   emit: (output: React.ReactNode) => void;
   cli: Cli;
+  abortController: AbortController;
 }
 
 export interface Command {

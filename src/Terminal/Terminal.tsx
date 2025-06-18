@@ -29,6 +29,11 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     resolve: (value: string) => void;
   } | null>(null);
 
+  // necessary to receive keyboard focus
+  useEffect(() => {
+    terminalRef.current?.focus();
+  }, [processing]);
+
   useEffect(() => {
     cli.current = new Cli(tree, inputRef, terminalRef);
 
