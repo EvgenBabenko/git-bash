@@ -30,9 +30,8 @@ export function delay(ms: number, signal?: AbortSignal): Promise<void> {
 
     if (signal) {
       signal.addEventListener("abort", () => {
-        console.log(555);
         clearTimeout(timeout);
-        reject(new Error("Delay aborted"));
+        reject(new Error("stopped"));
       });
     }
   });

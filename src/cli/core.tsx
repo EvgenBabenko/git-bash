@@ -48,50 +48,16 @@ export interface PromtItem {
 
 export class Cli {
   private registry = new CommandRegistry();
-  private history = new CommandHistory();
+  public history = new CommandHistory();
   public items: Item[] = [];
   public path = "";
-  private isCtrlKeyPressed = false;
-  private abortController?: AbortController;
+  public controller?: AbortController;
 
   constructor(
     private tree: Tree,
-    private inputRef: React.RefObject<HTMLInputElement | null>,
     private terminalRef: React.RefObject<HTMLDivElement | null>
   ) {
     this.registerDefaultCommands();
-
-    this.inputKeyUp = this.inputKeyUp.bind(this);
-    this.terminalKeyDown = this.terminalKeyDown.bind(this);
-    this.terminalKeyUp = this.terminalKeyUp.bind(this);
-  }
-
-  addEventListener() {
-    if (this.inputRef.current) {
-      this.inputRef.current.addEventListener("keydown", this.inputKeyUp);
-    }
-
-    if (this.terminalRef.current) {
-      this.terminalRef.current.addEventListener(
-        "keydown",
-        this.terminalKeyDown
-      );
-      this.terminalRef.current.addEventListener("keyup", this.terminalKeyUp);
-    }
-  }
-
-  removeEventListener() {
-    if (this.inputRef.current) {
-      this.inputRef.current.removeEventListener("keydown", this.inputKeyUp);
-    }
-
-    if (this.terminalRef.current) {
-      this.terminalRef.current.removeEventListener(
-        "keydown",
-        this.terminalKeyDown
-      );
-      this.terminalRef.current.removeEventListener("keyup", this.terminalKeyUp);
-    }
   }
 
   getChildren(path?: string): Tree[] | null {
@@ -131,7 +97,7 @@ export class Cli {
       return;
     }
 
-    this.abortController = new AbortController();
+    this.controller = new AbortController();
     const rawArgs = input.split(" ").filter(Boolean);
     const [argument, ...rest] = rawArgs;
     const args = normalizeArgs(rest);
@@ -195,12 +161,7 @@ export class Cli {
     };
 
     try {
-      const result = command.run({
-        args,
-        emit,
-        cli: this,
-        abortController: this.abortController,
-      });
+      const result = command.run({ args, emit, cli: this });
 
       if (result instanceof Promise) {
         // Async command: let it call emit() internally
@@ -231,68 +192,6 @@ export class Cli {
       });
     });
   }
-
-  inputKeyUp(e: KeyboardEvent) {
-    switch (e.code) {
-      case "ArrowUp": {
-        if (this.inputRef.current) {
-          const input = this.history.prev();
-
-          this.inputRef.current.value = input;
-
-          requestAnimationFrame(() => {
-            this.inputRef.current?.setSelectionRange(
-              input.length,
-              input.length
-            );
-          });
-        }
-
-        return;
-      }
-      case "ArrowDown": {
-        if (this.inputRef.current) {
-          const input = this.history.next();
-
-          this.inputRef.current.value = input;
-          this.inputRef.current.setSelectionRange(input.length, input.length);
-        }
-
-        return;
-      }
-      case "NumpadEnter":
-      case "Enter": {
-        const input = this.inputRef!.current!.value;
-        this.inputRef!.current!.value = "";
-        this.execute(input);
-
-        return;
-      }
-
-      default:
-    }
-  }
-
-  terminalKeyDown = (e: KeyboardEvent) => {
-    if (e.ctrlKey) {
-      this.isCtrlKeyPressed = true;
-    }
-
-    if (e.code === "KeyC" && this.isCtrlKeyPressed) {
-      console.log("Ctrl+C pressed");
-      // Optional: prevent default copy behavior
-      e.preventDefault();
-
-      this.abortController?.abort();
-      emitter.emit("PROCESSING_STATUS", false);
-    }
-  };
-
-  terminalKeyUp = (e: KeyboardEvent) => {
-    if (e.ctrlKey) {
-      this.isCtrlKeyPressed = false;
-    }
-  };
 
   getRegistry(): CommandRegistry {
     return this.registry;

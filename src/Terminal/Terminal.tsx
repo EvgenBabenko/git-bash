@@ -4,6 +4,7 @@ import { Cli, Item, Tree } from "@/cli/core";
 import { Shell } from "./Shell/Shell";
 import { ShellTitle } from "./ShellTitle/ShellTitle";
 import { emitter } from "@/cli/utils";
+import { Input } from "./Input/Input";
 
 interface Props {
   tree: Tree;
@@ -15,7 +16,8 @@ interface Props {
 }
 
 export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const tempInputRef = useRef<HTMLTextAreaElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const [path, setPath] = useState("");
   const [processing, setProcessing] = useState(true);
@@ -29,13 +31,8 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     resolve: (value: string) => void;
   } | null>(null);
 
-  // necessary to receive keyboard focus
   useEffect(() => {
-    terminalRef.current?.focus();
-  }, [processing]);
-
-  useEffect(() => {
-    cli.current = new Cli(tree, inputRef, terminalRef);
+    cli.current = new Cli(tree, terminalRef);
 
     setPath(cli.current.path);
 
@@ -44,18 +41,17 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     // initial focus
     inputRef.current?.focus();
 
-    // keep input always focused
+    // keep inputs always focused
     document.addEventListener(
       "click",
       () => {
         inputRef.current?.focus();
+        tempInputRef.current?.focus();
       },
       {
         signal: controller.signal,
       }
     );
-
-    cli.current.addEventListener();
 
     emitter.on("PATH", (path) => {
       setPath(path);
@@ -105,8 +101,6 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     return () => {
       controller.abort();
 
-      cli.current?.removeEventListener();
-
       emitter.off("PATH");
       emitter.off("CLEAR");
       emitter.off("PROCESSING_STATUS");
@@ -121,7 +115,43 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     if (!processing) {
       inputRef.current?.focus();
     }
+
+    if (processing) {
+      tempInputRef.current?.focus();
+    }
   }, [processing]);
+
+  function onInputKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (!cli.current || !inputRef.current) {
+      return;
+    }
+
+    if (e.code === "ArrowUp") {
+      const input = cli.current.history.prev();
+
+      inputRef.current.value = input;
+      requestAnimationFrame(() => {
+        inputRef.current?.setSelectionRange(input.length, input.length);
+      });
+    }
+
+    if (e.code === "ArrowDown") {
+      const input = cli.current.history.next();
+
+      inputRef.current.value = input;
+      inputRef.current.setSelectionRange(input.length, input.length);
+    }
+
+    if (e.code === "NumpadEnter" || e.code === "Enter") {
+      e.preventDefault();
+
+      const input = inputRef.current!.value;
+
+      inputRef.current.value = "";
+      inputRef.current.style.height = inputRef.current.scrollHeight + "px";
+      cli.current.execute(input);
+    }
+  }
 
   return (
     <Shell path={path} terminalRef={terminalRef} userName={userName}>
@@ -137,25 +167,41 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
         );
       })}
 
+      {processing && (
+        <Input
+          ref={tempInputRef}
+          onKeyDown={(e) => {
+            if (e.code === "KeyC" && e.ctrlKey) {
+              // prevent default copy behavior
+              e.preventDefault();
+
+              cli.current?.controller?.abort();
+              emitter.emit("PROCESSING_STATUS", false);
+            }
+          }}
+        />
+      )}
+
       {prompt && (
-        <>
+        <div className="text-white">
           <div>{prompt.question}</div>
           <input
             type="text"
             autoFocus
             style={{ caretColor: "white" }}
             autoComplete="off"
-            className="bg-transparent border-none text-white outline-none"
+            className="bg-transparent border-none outline-none"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 const value = e.currentTarget.value;
+
                 e.currentTarget.value = "";
-                prompt.resolve(value);
+                prompt?.resolve(value);
                 setPrompt(null);
               }
             }}
           />
-        </>
+        </div>
       )}
 
       <div
@@ -166,18 +212,9 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
         }}
       >
         <ShellTitle path={path} userName={userName} />
-        <div>
-          <label htmlFor="input">$ </label>
-          <input
-            ref={inputRef}
-            id="input"
-            type="text"
-            name="input"
-            autoFocus
-            autoComplete="off"
-            className="bg-transparent border-none text-white outline-none"
-            style={{ caretColor: "white" }}
-          />
+        <div className="relative w-full text-white">
+          <span className="absolute left-0 top-[1.7px]">$</span>
+          <Input ref={inputRef} onKeyDown={onInputKeyDown} />
         </div>
       </div>
     </Shell>

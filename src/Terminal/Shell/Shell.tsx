@@ -32,10 +32,8 @@ export const Shell = ({ children, path, terminalRef, userName }: Props) => {
       <Header userName={userName} path={path} />
 
       <div
-        className="flex-1 overflow-y-auto p-1 text-xs font-mono"
+        className="flex-1 overflow-y-auto p-1 text-xs font-mono break-all"
         ref={terminalRef}
-        // keyboard focusable
-        tabIndex={0}
       >
         {children}
       </div>
