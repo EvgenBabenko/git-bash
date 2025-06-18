@@ -50,8 +50,8 @@ export const mkdir: Command = {
     }
 
     children.push({
-      name: directory,
       type: "folder",
+      name: directory,
       path: `${cli.path}"/"${directory}`,
       children: [],
     });

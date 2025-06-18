@@ -23,10 +23,10 @@ export const touch: Command = {
       }
 
       children.push({
-        name: el,
         type: "file",
+        name: el,
         path: `${cli.path}"/"${el}`,
-        children: [],
+        content: "",
       });
     });
 

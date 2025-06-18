@@ -1,5 +1,5 @@
 import React from "react";
-import { CommandRegistry, Command as ICommand } from "./command-registry";
+import { CommandRegistry, Command } from "./command-registry";
 import { cd } from "./commands/cd";
 import { help } from "./commands/help";
 import { ls } from "./commands/ls";
@@ -15,13 +15,23 @@ import { touch } from "./commands/touch";
 import { promt } from "./commands/promt";
 import { normalizeArgs } from "./utils/normalize-args";
 
-export interface Tree {
-  name: string;
-  type: "folder" | "file";
-  path: string;
-  children: Tree[];
-  content?: React.FC | string;
-}
+export type Tree =
+  | {
+      type: "folder";
+      name: string;
+      path: string;
+      children: Tree[];
+      createdAt?: string;
+      updatedAt?: string;
+    }
+  | {
+      type: "file";
+      name: string;
+      path: string;
+      content: React.FC | string;
+      createdAt?: string;
+      updatedAt?: string;
+    };
 
 export interface Item {
   id: string;
@@ -66,6 +76,8 @@ export class Cli {
 
   getChildren(path?: string): Tree[] | null {
     function inner(tree: Tree, targetPath: string): Tree[] | null {
+      if (tree.type === "file") return null;
+
       if (tree.path === targetPath) {
         return tree.children || [];
       }
@@ -117,7 +129,7 @@ export class Cli {
       const items = this.getChildren();
       const element = items?.find((el) => el.name === fileName);
 
-      if (!element) {
+      if (!element || element.type === "folder") {
         const output = `bash: ${argument}: No such file or directory`;
         emitter.emit("ADD_ITEM", { ...item, output });
 
@@ -239,7 +251,7 @@ export class Cli {
     return this.registry;
   }
 
-  registerCommand(command: ICommand) {
+  registerCommand(command: Command) {
     this.registry.register(command);
   }
 

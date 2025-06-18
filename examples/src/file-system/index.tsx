@@ -11,21 +11,18 @@ export const tree: Tree = {
       type: "file",
       path: "file1.sh",
       content: () => <div>Hello World</div>,
-      children: [],
     },
     {
       name: "hello.sh",
       type: "file",
       path: "hello.sh",
       content: Hello,
-      children: [],
     },
     {
       name: "file2.sh",
       type: "file",
       path: "file2.sh",
       content: "Hello World!",
-      children: [],
     },
     {
       name: "folder",
@@ -36,7 +33,6 @@ export const tree: Tree = {
           name: "index.html",
           type: "file",
           path: "folder/index.html",
-          children: [],
           content: "",
         },
         {
@@ -48,7 +44,6 @@ export const tree: Tree = {
               name: "index.html",
               type: "file",
               path: "folder/folder2/index.html",
-              children: [],
               content: "",
             },
           ],
