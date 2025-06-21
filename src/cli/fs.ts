@@ -30,7 +30,6 @@ export type Tree =
 
 export class Fs {
   public path = "";
-  private children: Tree[] | null = null;
   private tree: Tree = {
     type: "folder",
     name: "root",
@@ -41,14 +40,7 @@ export class Fs {
 
   constructor() {}
 
-  getChildren(path?: string) {
-    const children = this._getChildren(path);
-    this.children = children;
-
-    return children;
-  }
-
-  private _getChildren(path?: string): Tree[] | null {
+  getChildren(path?: string): Tree[] | null {
     function inner(tree: Tree, targetPath: string): Tree[] | null {
       if (tree.type === "file") return null;
 
@@ -95,7 +87,9 @@ export class Fs {
   }
 
   createFolder(name: string, children: Tree[]) {
-    if (!this.children) {
+    const children = this.getChildren();
+
+    if (children) {
       throw new Error("unexpected error");
     }
 
@@ -105,7 +99,7 @@ export class Fs {
       throw new Error("cannot create directory '${name}': File exists");
     }
 
-    this.children.push({
+    children.push({
       type: "folder",
       name,
       path: `${this.path}"/"${name}`,
@@ -115,11 +109,13 @@ export class Fs {
   }
 
   delete(elem: Tree) {
-    if (!this.children) {
+    const children = this.getChildren();
+
+    if (!children) {
       throw new Error("unexpected error");
     }
 
-    this.children.splice(this.children.indexOf(elem), 1);
+    children.splice(children.indexOf(elem), 1);
   }
 
   find(name: string) {
@@ -130,24 +126,27 @@ export class Fs {
     return this.children?.find((el) => el.name === name);
   }
 
-  add(path: string, item: InitTree[]) {
-    function inner(tree: Tree, targetPath: string, items: InitTree[]) {
-      if (tree.type === "file") return;
+  add(path: string, items: InitTree[]) {
+    const children = this.getChildren(path);
 
-      if (tree.path === targetPath) {
-        tree.children = items;
-        return;
+    const that = this;
+
+    function inner(tree: Tree, targetPath: string, items: InitTree[]) {
+      const children = that.getChildren(path);
+
+      if (tree.type === "file") {
+        that.createFile(tree.name, tree.content);
       }
 
-      if (tree.children.length > 0) {
+      if (tree.type === "folder") {
         for (let item of tree.children) {
-          if (item.type === "folder") {
-            inner(item, targetPath, items);
-          }
+          inner(item, targetPath, items);
         }
       }
     }
 
-    inner(this.tree, path, item);
+    for (const item of items) {
+      inner(item, path, item);
+    }
   }
 }
