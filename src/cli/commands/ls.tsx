@@ -1,5 +1,5 @@
 import { Command } from "../command-registry";
-import { Tree } from "../core";
+import { Tree } from "../fs";
 import { parseArgs } from "../utils/parse-args";
 
 export const ls: Command = {
@@ -16,7 +16,7 @@ export const ls: Command = {
   ),
   run: ({ cli, args }) => {
     const argv = parseArgs(args);
-    const children = cli.getChildren();
+    const children = cli.fs.getChildren();
 
     if (!children) {
       return "no such files or directories";

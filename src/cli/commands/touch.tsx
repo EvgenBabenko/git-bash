@@ -9,26 +9,20 @@ export const touch: Command = {
   run: ({ cli, args }) => {
     // const argv = parseArgs(args);
     const toCreate = extractValues(args, []);
-    const children = cli.getChildren();
+    const children = cli.fs.getChildren();
 
     if (!children) {
       return "unexpected error";
     }
 
-    toCreate.forEach((el) => {
-      const item = children.find((item) => item.name === el);
+    toCreate.forEach((name) => {
+      const file = cli.fs.find(name);
 
-      if (item) {
+      if (file) {
         return "";
       }
 
-      children.push({
-        type: "file",
-        name: el,
-        path: `${cli.path}"/"${el}`,
-        createdAt: new Date().toISOString(),
-        content: "",
-      });
+      cli.fs.createFile(name, "");
     });
 
     return "";

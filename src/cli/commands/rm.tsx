@@ -20,7 +20,7 @@ export const rm: Command = {
   run: async ({ cli, args }) => {
     const argv = parseArgs(args);
     const toDelete = extractValues(args, []);
-    const children = cli.getChildren();
+    const children = cli.fs.getChildren();
 
     if (!children) {
       return "unexpected error";
@@ -29,9 +29,9 @@ export const rm: Command = {
     const results: string[] = [];
 
     for (const name of toDelete) {
-      const item = children.find((i) => i.name === name);
+      const file = cli.fs.find(name);
 
-      if (!item) {
+      if (!file) {
         if (!argv.has("-f")) {
           results.push(
             `rm: cannot remove '${name}': No such file or directory`
@@ -42,7 +42,7 @@ export const rm: Command = {
       }
 
       if (argv.has("-i") && !argv.has("-f")) {
-        const question = `rm: remove ${item.type} '${name}'?`;
+        const question = `rm: remove ${file.type} '${name}'?`;
         const answer = await cli.promptUser(question);
 
         if (!/^y(es)?$/i.test(answer.trim())) {
@@ -50,7 +50,7 @@ export const rm: Command = {
         }
       }
 
-      if (item.type === "folder" && !argv.has("-r")) {
+      if (file.type === "folder" && !argv.has("-r")) {
         if (!argv.has("-f")) {
           results.push(`rm: cannot remove '${name}': Is a directory`);
         }
@@ -58,7 +58,7 @@ export const rm: Command = {
         continue;
       }
 
-      children.splice(children.indexOf(item), 1);
+      cli.fs.delete(file);
     }
 
     return (

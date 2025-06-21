@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Cli, Item, Tree } from "@/cli/core";
+import { Cli, Item } from "@/cli/core";
 
 import { Shell } from "./Shell/Shell";
 import { ShellTitle } from "./ShellTitle/ShellTitle";
 import { emitter } from "@/cli/utils";
 import { Input } from "./Input/Input";
+import { Fs } from "@/cli/fs";
 
 interface Props {
-  tree: Tree;
+  fs: Fs;
   onInit?: (props: {
     path: string;
     userName: string;
@@ -15,7 +16,7 @@ interface Props {
   userName?: string;
 }
 
-export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
+export const Terminal = ({ onInit, fs, userName = "guest" }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const tempInputRef = useRef<HTMLTextAreaElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -33,9 +34,9 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
   const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    cli.current = new Cli(tree, terminalRef);
+    cli.current = new Cli(fs, terminalRef);
 
-    setPath(cli.current.path);
+    setPath(cli.current.fs.path);
 
     const controller = new AbortController();
 
@@ -90,7 +91,7 @@ export const Terminal = ({ onInit, tree, userName = "guest" }: Props) => {
     });
 
     if (onInit) {
-      onInit({ path: cli.current.path, userName })
+      onInit({ path: cli.current.fs.path, userName })
         .then((res) => {
           if (React.isValidElement(res)) {
             setInitComponent(res);

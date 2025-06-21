@@ -1,7 +1,7 @@
 // import { ShellTitle } from "Terminal/ShellTitle/ShellTitle";
 import "./App.css";
 import { Terminal } from "@lib/Terminal/Terminal";
-import { tree } from "@/file-system";
+import { fs } from "@/file-system";
 import { useEffect, useState } from "react";
 import { emitter } from "@lib/cli/utils";
 
@@ -23,7 +23,7 @@ export const App = () => {
       <div className="w-full max-w-[600px] mx-auto h-[250px]">
         {isVisible && (
           <Terminal
-            tree={tree}
+            fs={fs}
             // onInit={async () => {
             //   // await delay(5000);
 

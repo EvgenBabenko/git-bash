@@ -14,24 +14,7 @@ import { rm } from "./commands/rm";
 import { touch } from "./commands/touch";
 import { promt } from "./commands/promt";
 import { normalizeArgs } from "./utils/normalize-args";
-
-export type Tree =
-  | {
-      type: "folder";
-      name: string;
-      path: string;
-      children: Tree[];
-      createdAt: string;
-      updatedAt?: string;
-    }
-  | {
-      type: "file";
-      name: string;
-      path: string;
-      content: React.FC | string;
-      createdAt: string;
-      updatedAt?: string;
-    };
+import { Fs, Tree } from "./fs";
 
 export interface Item {
   id: string;
@@ -50,40 +33,13 @@ export class Cli {
   private registry = new CommandRegistry();
   public history = new CommandHistory();
   public items: Item[] = [];
-  public path = "";
   public controller?: AbortController;
 
   constructor(
-    private tree: Tree,
+    public fs: Fs,
     private terminalRef: React.RefObject<HTMLDivElement | null>
   ) {
     this.registerDefaultCommands();
-  }
-
-  getChildren(path?: string): Tree[] | null {
-    function inner(tree: Tree, targetPath: string): Tree[] | null {
-      if (tree.type === "file") return null;
-
-      if (tree.path === targetPath) {
-        return tree.children || [];
-      }
-
-      if (tree.children.length > 0) {
-        for (let item of tree.children) {
-          if (item.type === "folder") {
-            const result = inner(item, targetPath);
-
-            if (result !== null) {
-              return result;
-            }
-          }
-        }
-      }
-
-      return null;
-    }
-
-    return inner(this.tree, path ?? this.path);
   }
 
   addItem(item: Item) {
@@ -108,12 +64,12 @@ export class Cli {
       id: Date.now().toString(),
       input,
       output: null,
-      path: this.path,
+      path: this.fs.path,
     };
 
     if (!isCommand) {
       const fileName = argument.split("/").pop() ?? "";
-      const items = this.getChildren();
+      const items = this.fs.getChildren();
       const element = items?.find((el) => el.name === fileName);
 
       if (!element || element.type === "folder") {

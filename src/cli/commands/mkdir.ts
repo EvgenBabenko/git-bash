@@ -8,7 +8,7 @@ export const mkdir: Command = {
   help: "Usage: mkdir [OPTION]... DIRECTORY...",
   run: ({ cli, args }) => {
     // const argv = parseArgs(args);
-    const children = cli.getChildren();
+    const children = cli.fs.getChildren();
 
     if (!children) {
       return "unexpected error";
@@ -39,23 +39,19 @@ export const mkdir: Command = {
     //   }
     // }
 
-    const directory = extractValues(args, [])[0];
+    const name = extractValues(args, [])[0];
 
-    if (!directory) {
+    if (!name) {
       return "mkdir: missing operand";
     }
 
-    if (children.find((item) => item.name === directory)) {
-      return `mkdir: cannot create directory '${directory}': File exists`;
+    const dir = cli.fs.find(name);
+
+    if (dir) {
+      return `mkdir: cannot create directory '${name}': File exists`;
     }
 
-    children.push({
-      type: "folder",
-      name: directory,
-      path: `${cli.path}"/"${directory}`,
-      createdAt: new Date().toISOString(),
-      children: [],
-    });
+    cli.fs.createFolder(name, []);
 
     return "";
   },

@@ -1,4 +1,4 @@
-import { Tree } from "@lib/cli/core";
+import { Tree, Fs } from "@lib/cli/fs";
 import { Hello } from "./Hello/Hello";
 
 export const tree: Tree = {
@@ -60,3 +60,45 @@ export const tree: Tree = {
     },
   ],
 };
+
+export const fs = new Fs();
+
+fs.add("", [
+  {
+    type: "file",
+    name: "file1.sh",
+    content: () => <div>Hello World</div>,
+  },
+  {
+    type: "file",
+    name: "hello.sh",
+    content: Hello,
+  },
+  {
+    type: "file",
+    name: "file2.sh",
+    content: "Hello World!",
+  },
+  {
+    type: "folder",
+    name: "folder",
+    children: [
+      {
+        name: "index.html",
+        type: "file",
+        content: "",
+      },
+      {
+        type: "folder",
+        name: "folder2",
+        children: [
+          {
+            type: "file",
+            name: "index.html",
+            content: "",
+          },
+        ],
+      },
+    ],
+  },
+]);

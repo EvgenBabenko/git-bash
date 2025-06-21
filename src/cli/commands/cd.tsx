@@ -20,23 +20,23 @@ export const cd: Command = {
 
     // Go to root if no path is provided
     if (!path) {
-      cli.path = "";
-      emitter.emit("PATH", cli.path);
+      cli.fs.path = "";
+      emitter.emit("PATH", cli.fs.path);
 
       return "";
     }
 
     // Normalize the current path into an array
-    let currentPathSegments = cli.path.split("/").filter(Boolean);
+    let currentPathSegments = cli.fs.path.split("/").filter(Boolean);
 
     const parts = path.split("/").filter(Boolean);
 
-    let currentChildren = cli.getChildren();
+    let currentChildren = cli.fs.getChildren();
 
     for (const part of parts) {
       if (part === "..") {
         currentPathSegments.pop();
-        currentChildren = cli.getChildren(currentPathSegments.join("/"));
+        currentChildren = cli.fs.getChildren(currentPathSegments.join("/"));
 
         continue;
       }
@@ -52,11 +52,11 @@ export const cd: Command = {
       }
 
       currentPathSegments.push(part);
-      currentChildren = cli.getChildren(currentPathSegments.join("/"));
+      currentChildren = cli.fs.getChildren(currentPathSegments.join("/"));
     }
 
-    cli.path = currentPathSegments.join("/");
-    emitter.emit("PATH", cli.path);
+    cli.fs.path = currentPathSegments.join("/");
+    emitter.emit("PATH", cli.fs.path);
 
     return "";
   },
