@@ -11,10 +11,11 @@ const touch = {
             const item = children.find((item)=>item.name === el);
             if (item) return "";
             children.push({
-                name: el,
                 type: "file",
+                name: el,
                 path: `${cli.path}"/"${el}`,
-                children: []
+                createdAt: new Date().toISOString(),
+                content: ""
             });
         });
         return "";

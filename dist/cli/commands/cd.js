@@ -1,26 +1,24 @@
-import { jsx, jsxs } from "react/jsx-runtime";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { emitter } from "../utils.js";
+import { extractValues } from "../utils/extract-values.js";
 const cd = {
     name: "cd",
     description: "Change the shell working directory.",
-    help: /*#__PURE__*/ jsxs("div", {
+    help: /*#__PURE__*/ jsxs(Fragment, {
         children: [
-            /*#__PURE__*/ jsx("div", {
-                children: "cd: cd [-P]"
-            }),
-            /*#__PURE__*/ jsx("div", {
-                children: "Options: "
-            }),
-            /*#__PURE__*/ jsx("div", {
-                children: "-P Change to path P, if P is not specified, change to the root directory"
-            })
+            "Usage: cd [DIR] ",
+            /*#__PURE__*/ jsx("br", {}),
+            "Change the current directory to DIR. The default DIR is the value of the HOME shell variable. ",
+            /*#__PURE__*/ jsx("br", {}),
+            "`..' is processed by removing the immediately previous pathname component back to a slash or the beginning of DIR. ",
+            /*#__PURE__*/ jsx("br", {}),
+            "If DIR is not specified, change to the root directory"
         ]
     }),
-    run: ({ args: [P], cli })=>{
-        const path = P;
-        const rootPath = "";
+    run: ({ args, cli })=>{
+        const path = extractValues(args, [])[0];
         if (!path) {
-            cli.path = rootPath;
+            cli.path = "";
             emitter.emit("PATH", cli.path);
             return "";
         }

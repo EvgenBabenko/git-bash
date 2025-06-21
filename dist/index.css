@@ -275,8 +275,20 @@
     position: absolute;
   }
 
+  .relative {
+    position: relative;
+  }
+
   .static {
     position: static;
+  }
+
+  .top-\[1\.7px\] {
+    top: 1.7px;
+  }
+
+  .left-0 {
+    left: calc(var(--spacing) * 0);
   }
 
   .mx-auto {
@@ -313,6 +325,10 @@
 
   .flex-1 {
     flex: 1;
+  }
+
+  .resize-none {
+    resize: none;
   }
 
   .flex-col {
@@ -377,6 +393,10 @@
     padding: 6px 4px;
   }
 
+  .pl-3 {
+    padding-left: calc(var(--spacing) * 3);
+  }
+
   .text-left {
     text-align: left;
   }
@@ -393,6 +413,10 @@
   .text-xs {
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+
+  .break-all {
+    word-break: break-all;
   }
 
   .text-black {

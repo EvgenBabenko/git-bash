@@ -10,9 +10,10 @@ const mkdir = {
         if (!directory) return "mkdir: missing operand";
         if (children.find((item)=>item.name === directory)) return `mkdir: cannot create directory '${directory}': File exists`;
         children.push({
-            name: directory,
             type: "folder",
+            name: directory,
             path: `${cli.path}"/"${directory}`,
+            createdAt: new Date().toISOString(),
             children: []
         });
         return "";

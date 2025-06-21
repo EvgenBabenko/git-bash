@@ -39,13 +39,14 @@ const tree: Tree = {
   name: "root",
   type: "folder",
   path: "",
+  createdAt: "2023-08-22T12:34:56Z",
   children: [
     {
       name: "hello",
       type: "file",
       path: "hello",
+      createdAt: "2023-08-22T12:34:56Z",
       content: "Hello World!",
-      children: [],
     },
   ],
 };
@@ -59,10 +60,11 @@ Type `./hello` in terminal, it returns `Hello World!`
 
 ## 🧩 Props
 
-| Prop     | Type                                                                | Required | Description                                                              |
-| -------- | ------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------ |
-| `tree`   | `Tree`                                                              | ✅       | CLI command tree that defines available structure                        |
-| `onInit` | `(props: { path: string, userName: string }) => Promise<ReactNode>` | ❌       | Optional async init logic. Can return a React element shown during setup |
+| Prop       | Type                                                                | Required | Description                                                              |
+| ---------- | ------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------ |
+| `tree`     | `Tree`                                                              | ✅       | CLI command tree that defines available structure                        |
+| `onInit`   | `(props: { path: string, userName: string }) => Promise<ReactNode>` | ❌       | Optional async init logic. Can return a React element shown during setup |
+| `userName` | `string`                                                            | ❌       | Username for shell title, default `guest`                                |
 
 ## 📤 Emits Events
 

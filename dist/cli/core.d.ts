@@ -1,12 +1,21 @@
 import React from "react";
-import { CommandRegistry, Command as ICommand } from "./command-registry";
-export interface Tree {
+import { CommandRegistry, Command } from "./command-registry";
+import { CommandHistory } from "./command-history";
+export type Tree = {
+    type: "folder";
     name: string;
-    type: "folder" | "file";
     path: string;
     children: Tree[];
-    content?: React.FC | string;
-}
+    createdAt: string;
+    updatedAt?: string;
+} | {
+    type: "file";
+    name: string;
+    path: string;
+    content: React.FC | string;
+    createdAt: string;
+    updatedAt?: string;
+};
 export interface Item {
     id: string;
     input: string;
@@ -20,21 +29,18 @@ export interface PromtItem {
 }
 export declare class Cli {
     private tree;
-    private inputRef;
     private terminalRef;
     private registry;
-    private history;
+    history: CommandHistory;
     items: Item[];
     path: string;
-    constructor(tree: Tree, inputRef: React.RefObject<HTMLInputElement | null>, terminalRef: React.RefObject<HTMLDivElement | null>);
-    addEventListener(): void;
-    removeEventListener(): void;
+    controller?: AbortController;
+    constructor(tree: Tree, terminalRef: React.RefObject<HTMLDivElement | null>);
     getChildren(path?: string): Tree[] | null;
     addItem(item: Item): void;
     execute(input: string): void;
     promptUser(question: string): Promise<string>;
-    handleKeyUp(e: KeyboardEvent): void;
     getRegistry(): CommandRegistry;
-    registerCommand(command: ICommand): void;
+    registerCommand(command: Command): void;
     private registerDefaultCommands;
 }

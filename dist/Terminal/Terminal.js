@@ -1,12 +1,13 @@
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { jsx, jsxs } from "react/jsx-runtime";
 import react, { useEffect, useRef, useState } from "react";
 import { Cli } from "../cli/core.js";
 import { Shell } from "./Shell/Shell.js";
 import { ShellTitle } from "./ShellTitle/ShellTitle.js";
 import { emitter } from "../cli/utils.js";
-const USER_NAME = "guest";
-const Terminal = ({ onInit, tree })=>{
+import { Input } from "./Input/Input.js";
+const Terminal = ({ onInit, tree, userName = "guest" })=>{
     const inputRef = useRef(null);
+    const tempInputRef = useRef(null);
     const terminalRef = useRef(null);
     const [path, setPath] = useState("");
     const [processing, setProcessing] = useState(true);
@@ -15,17 +16,21 @@ const Terminal = ({ onInit, tree })=>{
     const [initialization, setInitialization] = useState(true);
     const [initComponent, setInitComponent] = useState(null);
     const [prompt, setPrompt] = useState(null);
+    const [isExiting, setIsExiting] = useState(false);
     useEffect(()=>{
-        cli.current = new Cli(tree, inputRef, terminalRef);
+        cli.current = new Cli(tree, terminalRef);
         setPath(cli.current.path);
         const controller = new AbortController();
         inputRef.current?.focus();
         document.addEventListener("click", ()=>{
             inputRef.current?.focus();
+            tempInputRef.current?.focus();
         }, {
             signal: controller.signal
         });
-        cli.current.addEventListener();
+        emitter.on("EXIT", ()=>{
+            setIsExiting(true);
+        });
         emitter.on("PATH", (path)=>{
             setPath(path);
         });
@@ -57,7 +62,7 @@ const Terminal = ({ onInit, tree })=>{
         });
         if (onInit) onInit({
             path: cli.current.path,
-            userName: USER_NAME
+            userName
         }).then((res)=>{
             if (/*#__PURE__*/ react.isValidElement(res)) setInitComponent(res);
         }).catch((err)=>console.error(err));
@@ -67,7 +72,7 @@ const Terminal = ({ onInit, tree })=>{
         }
         return ()=>{
             controller.abort();
-            cli.current?.removeEventListener();
+            emitter.off("EXIT");
             emitter.off("PATH");
             emitter.off("CLEAR");
             emitter.off("PROCESSING_STATUS");
@@ -79,20 +84,44 @@ const Terminal = ({ onInit, tree })=>{
     }, []);
     useEffect(()=>{
         if (!processing) inputRef.current?.focus();
+        if (processing) tempInputRef.current?.focus();
     }, [
         processing
     ]);
+    function onInputKeyDown(e) {
+        if (!cli.current || !inputRef.current) return;
+        if ("ArrowUp" === e.code) {
+            const input = cli.current.history.prev();
+            inputRef.current.value = input;
+            requestAnimationFrame(()=>{
+                inputRef.current?.setSelectionRange(input.length, input.length);
+            });
+        }
+        if ("ArrowDown" === e.code) {
+            const input = cli.current.history.next();
+            inputRef.current.value = input;
+            inputRef.current.setSelectionRange(input.length, input.length);
+        }
+        if ("NumpadEnter" === e.code || "Enter" === e.code) {
+            e.preventDefault();
+            const input = inputRef.current.value;
+            inputRef.current.value = "";
+            inputRef.current.style.height = inputRef.current.scrollHeight + "px";
+            cli.current.execute(input);
+        }
+    }
+    if (isExiting) return null;
     return /*#__PURE__*/ jsxs(Shell, {
         path: path,
         terminalRef: terminalRef,
-        userName: USER_NAME,
+        userName: userName,
         children: [
             initialization && initComponent,
             items.map((item)=>/*#__PURE__*/ jsxs("div", {
                     children: [
                         /*#__PURE__*/ jsx(ShellTitle, {
                             path: item.path,
-                            userName: USER_NAME
+                            userName: userName
                         }),
                         /*#__PURE__*/ jsxs("div", {
                             children: [
@@ -103,7 +132,18 @@ const Terminal = ({ onInit, tree })=>{
                         item.output
                     ]
                 }, item.id)),
-            prompt && /*#__PURE__*/ jsxs(Fragment, {
+            processing && /*#__PURE__*/ jsx(Input, {
+                ref: tempInputRef,
+                onKeyDown: (e)=>{
+                    if ("KeyC" === e.code && e.ctrlKey) {
+                        e.preventDefault();
+                        cli.current?.controller?.abort();
+                        emitter.emit("PROCESSING_STATUS", false);
+                    }
+                }
+            }),
+            prompt && /*#__PURE__*/ jsxs("div", {
+                className: "text-white",
                 children: [
                     /*#__PURE__*/ jsx("div", {
                         children: prompt.question
@@ -115,12 +155,12 @@ const Terminal = ({ onInit, tree })=>{
                             caretColor: "white"
                         },
                         autoComplete: "off",
-                        className: "bg-transparent border-none text-white outline-none",
+                        className: "bg-transparent border-none outline-none",
                         onKeyDown: (e)=>{
                             if ("Enter" === e.key) {
                                 const value = e.currentTarget.value;
                                 e.currentTarget.value = "";
-                                prompt.resolve(value);
+                                prompt?.resolve(value);
                                 setPrompt(null);
                             }
                         }
@@ -136,25 +176,18 @@ const Terminal = ({ onInit, tree })=>{
                 children: [
                     /*#__PURE__*/ jsx(ShellTitle, {
                         path: path,
-                        userName: USER_NAME
+                        userName: userName
                     }),
                     /*#__PURE__*/ jsxs("div", {
+                        className: "relative w-full text-white",
                         children: [
-                            /*#__PURE__*/ jsx("label", {
-                                htmlFor: "input",
-                                children: "$ "
+                            /*#__PURE__*/ jsx("span", {
+                                className: "absolute left-0 top-[1.7px]",
+                                children: "$"
                             }),
-                            /*#__PURE__*/ jsx("input", {
+                            /*#__PURE__*/ jsx(Input, {
                                 ref: inputRef,
-                                id: "input",
-                                type: "text",
-                                name: "input",
-                                autoFocus: true,
-                                autoComplete: "off",
-                                className: "bg-transparent border-none text-white outline-none",
-                                style: {
-                                    caretColor: "white"
-                                }
+                                onKeyDown: onInputKeyDown
                             })
                         ]
                     })

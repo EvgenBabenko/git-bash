@@ -6,6 +6,7 @@ interface Props {
         path: string;
         userName: string;
     }) => Promise<void | React.ReactNode>;
+    userName?: string;
 }
-export declare const Terminal: ({ onInit, tree }: Props) => import("react/jsx-runtime").JSX.Element;
+export declare const Terminal: ({ onInit, tree, userName }: Props) => import("react/jsx-runtime").JSX.Element | null;
 export {};

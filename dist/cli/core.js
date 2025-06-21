@@ -15,31 +15,24 @@ import { promt } from "./commands/promt.js";
 import { normalizeArgs } from "./utils/normalize-args.js";
 class Cli {
     tree;
-    inputRef;
     terminalRef;
     registry;
     history;
     items;
     path;
-    constructor(tree, inputRef, terminalRef){
+    controller;
+    constructor(tree, terminalRef){
         this.tree = tree;
-        this.inputRef = inputRef;
         this.terminalRef = terminalRef;
         this.registry = new CommandRegistry();
         this.history = new CommandHistory();
         this.items = [];
         this.path = "";
         this.registerDefaultCommands();
-        this.handleKeyUp = this.handleKeyUp.bind(this);
-    }
-    addEventListener() {
-        if (this.inputRef.current) this.inputRef.current.addEventListener("keydown", this.handleKeyUp);
-    }
-    removeEventListener() {
-        if (this.inputRef.current) this.inputRef.current.removeEventListener("keydown", this.handleKeyUp);
     }
     getChildren(path) {
         function inner(tree, targetPath) {
+            if ("file" === tree.type) return null;
             if (tree.path === targetPath) return tree.children || [];
             if (tree.children.length > 0) {
                 for (let item of tree.children)if ("folder" === item.type) {
@@ -58,6 +51,7 @@ class Cli {
     }
     execute(input) {
         if (!input) return;
+        this.controller = new AbortController();
         const rawArgs = input.split(" ").filter(Boolean);
         const [argument, ...rest] = rawArgs;
         const args = normalizeArgs(rest);
@@ -73,7 +67,7 @@ class Cli {
             const fileName = argument.split("/").pop() ?? "";
             const items = this.getChildren();
             const element = items?.find((el)=>el.name === fileName);
-            if (!element) {
+            if (!element || "folder" === element.type) {
                 const output = `bash: ${argument}: No such file or directory`;
                 emitter.emit("ADD_ITEM", {
                     ...item,
@@ -142,35 +136,6 @@ class Cli {
                 question
             });
         });
-    }
-    handleKeyUp(e) {
-        switch(e.code){
-            case "ArrowUp":
-                if (this.inputRef.current) {
-                    const input = this.history.prev();
-                    this.inputRef.current.value = input;
-                    requestAnimationFrame(()=>{
-                        this.inputRef.current?.setSelectionRange(input.length, input.length);
-                    });
-                }
-                return;
-            case "ArrowDown":
-                if (this.inputRef.current) {
-                    const input = this.history.next();
-                    this.inputRef.current.value = input;
-                    this.inputRef.current.setSelectionRange(input.length, input.length);
-                }
-                return;
-            case "NumpadEnter":
-            case "Enter":
-                {
-                    const input = this.inputRef.current.value;
-                    this.inputRef.current.value = "";
-                    this.execute(input);
-                    return;
-                }
-            default:
-        }
     }
     getRegistry() {
         return this.registry;

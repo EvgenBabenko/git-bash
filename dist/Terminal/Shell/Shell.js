@@ -46,7 +46,7 @@ const Shell = ({ children, path, terminalRef, userName })=>/*#__PURE__*/ jsxs("d
                 path: path
             }),
             /*#__PURE__*/ jsx("div", {
-                className: "flex-1 overflow-y-auto p-1 text-xs font-mono",
+                className: "flex-1 overflow-y-auto p-1 text-xs font-mono break-all",
                 ref: terminalRef,
                 children: children
             })

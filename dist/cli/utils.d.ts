@@ -11,5 +11,5 @@ type Events = {
     PROMPT: PromtItem;
 };
 export declare const emitter: import("mitt").Emitter<Events>;
-export declare function delay(ms: number): Promise<unknown>;
+export declare function delay(ms: number, signal?: AbortSignal): Promise<void>;
 export {};
